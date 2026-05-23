@@ -1,0 +1,13 @@
+[project]
+name = "dtu-10060-physics-tools"
+version = "0.1.0"
+description = "Useful tools for DTU 10060 Physics"
+readme = "README.md"
+requires-python = ">=3.14.5"
+dependencies = [
+    "ipykernel>=7.2.0",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.6",
+    "polars>=1.41.0",
+    "scipy>=1.17.1",
+]
