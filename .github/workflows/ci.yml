@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.14.5
+
+      - name: Install project dependencies
+        run: uv sync --locked
+
+      - name: Check Python syntax
+        run: uv run python -m py_compile physics_tools.py
+
+      - name: Check physics_tools.py imports cleanly
+        run: uv run python -c "import physics_tools"
+
+      - name: Lint with Ruff
+        run: uvx ruff check --no-cache physics_tools.py
+
+      - name: Check formatting with Ruff
+        run: uvx ruff format --check --no-cache physics_tools.py
+
+      - name: Type check with Ty
+        run: uvx ty check physics_tools.py
+
+      - name: Validate notebooks
+        run: |
+          uv run python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          notebooks = sorted(Path.cwd().glob("*.ipynb"))
+          if not notebooks:
+              print("FAIL: no notebooks found")
+              sys.exit(1)
+
+          required = {"nbformat", "nbformat_minor", "metadata", "cells"}
+          failed = False
+
+          for path in notebooks:
+              try:
+                  nb = json.loads(path.read_text(encoding="utf-8"))
+              except json.JSONDecodeError as exc:
+                  print(f"FAIL: {path} is not valid JSON: {exc}")
+                  failed = True
+                  continue
+
+              missing = required - nb.keys()
+              if missing:
+                  print(f"FAIL: {path} missing top-level keys: {sorted(missing)}")
+                  failed = True
+                  continue
+
+              if nb["nbformat"] < 4:
+                  print(f"FAIL: {path} expected nbformat >= 4, got {nb['nbformat']}")
+                  failed = True
+
+              if not isinstance(nb["cells"], list):
+                  print(f"FAIL: {path} cells must be a list")
+                  failed = True
+                  continue
+
+              errors = []
+              for index, cell in enumerate(nb["cells"]):
+                  cell_id = cell.get("id", f"<index {index}>")
+                  if cell.get("cell_type") not in {"code", "markdown", "raw"}:
+                      errors.append(
+                          f"Cell {cell_id}: unknown cell_type {cell.get('cell_type')!r}"
+                      )
+                  if not isinstance(cell.get("source"), (str, list)):
+                      errors.append(f"Cell {cell_id}: source must be str or list")
+
+              if errors:
+                  print(f"FAIL: {path} has structural errors:")
+                  for error in errors:
+                      print(f"  {error}")
+                  failed = True
+              else:
+                  print(
+                      f"OK: {path} has {len(nb['cells'])} cells, "
+                      f"nbformat {nb['nbformat']}.{nb['nbformat_minor']}"
+                  )
+
+          if failed:
+              sys.exit(1)
+          PY

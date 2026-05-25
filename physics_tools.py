@@ -291,7 +291,6 @@ def relative_velocity_1d(*objects) -> float:
     return float(sum(objects))
 
 
-
 # §6  CIRCULAR MOTION
 def rpm_to_rads(rpm: float) -> float:
     """Convert revolutions per minute → angular velocity ω [rad/s]."""
