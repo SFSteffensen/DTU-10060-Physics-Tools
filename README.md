@@ -1,5 +1,7 @@
 # DTU 10060 Physics Tools
 
+[![CI](https://github.com/SFSteffensen/DTU-10060-Physics-Tools/actions/workflows/ci.yml/badge.svg)](https://github.com/SFSteffensen/DTU-10060-Physics-Tools/actions/workflows/ci.yml)
+
 A Python utility library for DTU course 10060 (Polytechnical Foundation Physics).
 Covers the full OpenStax University Physics Vol. 1 syllabus used in the course.
 
