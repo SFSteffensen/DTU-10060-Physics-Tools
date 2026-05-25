@@ -360,7 +360,7 @@ def will_slip(F_applied: float, mu_s: float, N: float) -> bool:
 
 
 def inclined_plane(
-    theta_deg: float, mu_k: float = 0, mu_s: float = None, g_local: float = g
+    theta_deg: float, mu_k: float = 0, mu_s: float | None = None, g_local: float = g
 ) -> dict:
     """
     Block on a fixed incline. Returns sliding acceleration (kinetic friction)
