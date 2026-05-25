@@ -291,15 +291,6 @@ def relative_velocity_1d(*objects) -> float:
     return float(sum(objects))
 
 
-def river_problem_speed(ratio_against: float = 2.0) -> sp.Expr:
-    """
-    Boat speed in still water v from "time against / time with = ratio".
-    Symbolic answer in terms of v₀ (current speed).
-    """
-    v, v0 = sp.symbols("v v0", positive=True)
-    # L = (v+v0) T   and   L = (v-v0) · ratio·T   ⇒  (v+v0) = ratio (v-v0)
-    return sp.solve(sp.Eq(v + v0, ratio_against * (v - v0)), v)[0]
-
 
 # §6  CIRCULAR MOTION
 def rpm_to_rads(rpm: float) -> float:
