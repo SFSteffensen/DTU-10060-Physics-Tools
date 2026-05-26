@@ -71,6 +71,129 @@
   )
 ]
 
+== Formulas with Examples
+
+#align(center)[
+  #table(
+    columns: (auto, 1fr, 1fr),
+    stroke: 0.5pt,
+    inset: 6pt,
+    fill: (x, y) => if y == 0 {
+      gray.lighten(60%)
+    } else if calc.rem(y, 2) == 0 {
+      gray.lighten(90%)
+    } else {
+      none
+    },
+    table.header([*Topic*], [*Formula*], [*Example*]),
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Kinematics —*],
+    [Velocity from accel.],
+    [$v = v_0 + a t$],
+    [$v_0=0, a=2, t=3 => v=6$ m/s],
+
+    [Displacement],
+    [$Delta x = v_0 t + 1/2 a t^2$],
+    [$v_0=0, a=2, t=3 => Delta x=9$ m],
+
+    [Velocity from dist.],
+    [$v^2 = v_0^2 + 2 a Delta x$],
+    [$v_0=0, a=2, Delta x=9 => v=6$ m/s],
+
+    [Free fall height],
+    [$h = 1/2 g t^2$],
+    [$t=2 => h = 1/2 dot 9.82 dot 4 = 19.6$ m],
+
+    [Time to peak],
+    [$t_"top" = v_0 / g$],
+    [$v_0 = 20 => t_"top" = 2.04$ s],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Energy —*],
+    [Kinetic energy],
+    [$K = 1/2 m v^2$],
+    [$m=2, v=3 => K=9$ J],
+
+    [Gravitational PE],
+    [$U = m g h$],
+    [$m=2, h=5 => U=98.2$ J],
+
+    [Spring PE],
+    [$U = 1/2 k x^2$],
+    [$k=200, x=0.1 => U=1$ J],
+
+    [Work–energy thm.],
+    [$W_"net" = Delta K$],
+    [$W=18 "J", v_0=0 => v=sqrt(2 dot 18 slash m)$],
+
+    [Conservation (no friction)],
+    [$K_1 + U_1 = K_2 + U_2$],
+    [Drop $h=5$: $v=sqrt(2 g h)=9.9$ m/s],
+
+    [Power],
+    [$P = F v$],
+    [$F=100, v=5 => P=500$ W],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Forces & Friction —*],
+    [Newton's 2nd law],
+    [$F = m a$],
+    [$m=5, a=3 => F=15$ N],
+
+    [Normal on flat surface],
+    [$n = m g$],
+    [$m=10 => n=98.2$ N],
+
+    [Kinetic friction],
+    [$f_k = mu_k n$],
+    [$mu_k=0.3, n=98.2 => f_k=29.5$ N],
+
+    [Incline: along-plane gravity],
+    [$F_parallel = m g sin theta$],
+    [$m=5, theta=30° => F=24.5$ N],
+
+    [Incline: normal force],
+    [$n = m g cos theta$],
+    [$m=5, theta=30° => n=42.5$ N],
+
+    [Incline: slides if],
+    [$tan theta > mu_s$],
+    [$theta=35°, mu_s=0.6: tan 35°=0.70>0.6 =>$ slides],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Momentum & Collisions —*],
+    [Momentum],
+    [$p = m v$],
+    [$m=3, v=4 => p=12$ kg·m/s],
+
+    [Impulse],
+    [$Delta p = F Delta t$],
+    [$F=50, Delta t=0.1 => Delta p=5$ N·s],
+
+    [Perfectly inelastic],
+    [$v_f = (m_1 v_1 + m_2 v_2)/(m_1+m_2)$],
+    [$m_1=m_2, v_2=0 => v_f = v_1/2$],
+
+    [Explosion from rest],
+    [$m_1 v_1 + m_2 v_2 = 0$],
+    [$m_1=2, m_2=6, v_2=1 => v_1=-3$ m/s],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Rotation —*],
+    [Torque],
+    [$tau = r F sin theta$],
+    [$r=0.5, F=20, theta=90° => tau=10$ N·m],
+
+    [Rotational N2],
+    [$tau = I alpha$],
+    [$tau=10, I=2 => alpha=5$ rad/s²],
+
+    [Rolling condition],
+    [$v_"cm" = omega r$],
+    [$omega=10, r=0.1 => v_"cm"=1$ m/s],
+
+    [Angular momentum cons.],
+    [$I_1 omega_1 = I_2 omega_2$],
+    [$I_1=2, omega_1=5, I_2=4 => omega_2=2.5$ rad/s],
+  )
+]
+
 #pagebreak()
 
 = Experiments, Statistics and Error Propagation
