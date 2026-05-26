@@ -54,7 +54,13 @@ def sample_stats(data) -> dict:
     """
     Sample statistics: mean, sample std (ddof=1), standard error of the mean.
 
-    Returns dict with keys: mean, std, sem, n, min, max.
+    Returns:
+        mean  – sample mean
+        std   – sample standard deviation (ddof=1, Bessel-corrected)
+        sem   – standard error of the mean = std / sqrt(n)
+        n     – number of samples
+        min   – smallest value
+        max   – largest value
     """
     a = np.asarray(data, dtype=float)
     n = a.size
@@ -81,6 +87,12 @@ def is_consistent(new_value: float, data, n_sigma: float = 2.0) -> dict:
 
     Test: |new − μ̂| < n_sigma · s.   With n_sigma=2 this is roughly the 95 %
     interval of a Gaussian; n_sigma≈3 is "almost certainly the same".
+
+    Returns (all keys from sample_stats, plus):
+        new        – the new value being tested
+        deviation  – signed difference: new_value − mean
+        sigma_dist – how many sample std's away the new value is: |deviation| / std
+        consistent – True if |deviation| < n_sigma · std
     """
     s = sample_stats(data)
     diff = new_value - s["mean"]
@@ -130,7 +142,16 @@ def error_propagation(
 
 # §3  CURVE FITTING  (Experiments 2/2)
 def linear_fit(x, y) -> dict:
-    """Least-squares y = m x + b with stderr and R²."""
+    """
+    Least-squares fit y = m x + b.
+
+    Returns:
+        slope            – m
+        intercept        – b
+        sigma_slope      – standard error on m
+        sigma_intercept  – standard error on b
+        r2               – coefficient of determination R²
+    """
     r = stats.linregress(np.asarray(x, float), np.asarray(y, float))
     return dict(
         slope=r.slope,
@@ -145,7 +166,12 @@ def power_law_fit(x, y) -> dict:
     """
     Fit y = A · x^α via log-log linear regression.
 
-    Returns A, α, their σ, and R² of the log fit.
+    Returns:
+        A            – amplitude coefficient
+        alpha        – exponent (slope in log-log space)
+        sigma_A      – standard error on A
+        sigma_alpha  – standard error on alpha
+        r2           – R² of the log-log linear fit
     """
     x, y = np.asarray(x, float), np.asarray(y, float)
     if (x <= 0).any() or (y <= 0).any():
@@ -162,7 +188,16 @@ def power_law_fit(x, y) -> dict:
 
 
 def exp_fit(x, y) -> dict:
-    """Fit y = A · exp(k x). Returns A, k, σ_A, σ_k, R²."""
+    """
+    Fit y = A · exp(k x) via semi-log linear regression.
+
+    Returns:
+        A        – amplitude at x=0
+        k        – growth/decay rate
+        sigma_A  – standard error on A
+        sigma_k  – standard error on k
+        r2       – R² of the semi-log linear fit
+    """
     x, y = np.asarray(x, float), np.asarray(y, float)
     if (y <= 0).any():
         raise ValueError("Exponential fit requires y > 0")
@@ -218,7 +253,14 @@ def kin1d(*, v0=None, v=None, a=None, t=None, dx=None) -> dict:
         v² = v0² + 2 a dx
         dx = ½ (v0 + v) t
 
-    Picks the positive-time root when ambiguous. Returns dict of all 5.
+    Picks the positive-time root when ambiguous.
+
+    Returns:
+        v0  – initial velocity [m/s]
+        v   – final velocity [m/s]
+        a   – acceleration [m/s²]
+        t   – elapsed time [s]
+        dx  – displacement [m]
     """
     syms = sp.symbols("v0 v a t dx", real=True)
     v0_s, v_s, a_s, t_s, dx_s = syms
@@ -287,8 +329,14 @@ def projectile(v0: float, theta_deg: float, y0: float = 0, g_local: float = g) -
     """
     Projectile launched from (0, y0) with speed v0 at angle θ above horizontal.
 
-    Returns: vx, vy0, t_apex, h_max (above ground), t_ground, range R,
-             and a `traj(t)` callable returning (x(t), y(t)).
+    Returns:
+        vx          – horizontal velocity component (constant) [m/s]
+        vy0         – initial vertical velocity component [m/s]
+        t_apex      – time to reach peak height [s]
+        h_max       – maximum height above ground (not above y0) [m]
+        t_ground    – time of landing (y = 0) [s]
+        range       – horizontal distance at landing [m]
+        trajectory  – callable traj(t) returning (x(t), y(t)) arrays
     """
     θ = np.deg2rad(theta_deg)
     vx, vy0 = v0 * cos(θ), v0 * sin(θ)
@@ -350,8 +398,14 @@ def centrifuge_radius(rpm: float, a_in_g: float, g_local: float = g) -> float:
 def conical_pendulum(L: float, theta_deg: float, g_local: float = g) -> dict:
     """
     Conical pendulum (mass on string of length L sweeping at constant
-    half-angle θ from vertical). Returns angular velocity ω, period T,
-    speed v, and tension/weight ratio.
+    half-angle θ from vertical).
+
+    Returns:
+        omega            – angular velocity [rad/s]
+        T                – period of revolution [s]
+        v                – linear speed of the mass [m/s]
+        r                – radius of the horizontal circle [m]
+        tension_over_mg  – string tension divided by mg = 1 / cos θ
     """
     θ = np.deg2rad(theta_deg)
     ω = sqrt(g_local / (L * cos(θ)))
@@ -382,11 +436,15 @@ def inclined_plane(
     theta_deg: float, mu_k: float = 0, mu_s: float | None = None, g_local: float = g
 ) -> dict:
     """
-    Block on a fixed incline. Returns sliding acceleration (kinetic friction)
-    and whether the block can stay at rest (static).
+    Block on a fixed incline.
 
         a_slide = g (sin θ − μ_k cos θ)
         stays at rest if tan θ ≤ μ_s.
+
+    Returns:
+        theta_deg        – incline angle [deg] (echoed back)
+        a_slide          – acceleration while sliding [m/s²] (positive = down the slope)
+        can_stay_at_rest – True if tan θ ≤ μ_s (static friction sufficient to hold block)
     """
     θ = np.deg2rad(theta_deg)
     a_slide = g_local * (sin(θ) - mu_k * cos(θ))
@@ -405,7 +463,15 @@ def two_blocks_stacked(
 ) -> dict:
     """
     Two stacked blocks on a smooth floor. Horizontal force F on the chosen
-    block. Returns accelerations of each block and the system COM.
+    block (`pulled`: "top" or "bottom").
+
+    Returns:
+        slipping  – bool, whether the interface slides
+        a_top     – acceleration of the top block [m/s²]
+        a_bot     – acceleration of the bottom block [m/s²]
+        a_cm      – acceleration of the system center of mass [m/s²]
+                    (always F / (m_top + m_bot), internal friction doesn't affect COM)
+        friction  – interface friction force magnitude [N]
     """
     N_interface = m_top * g_local
     f_static_max = mu_s * N_interface
@@ -455,7 +521,11 @@ def integrate_em(
 ) -> dict:
     """
     Integrate m·ẍ = F(t, x, ẋ) using scipy.solve_ivp (RK45 default).
-    Returns t, x, v arrays (numpy).
+
+    Returns:
+        t  – time array [s] (numpy)
+        x  – position array [m] (numpy)
+        v  – velocity array [m/s] (numpy)
     """
 
     def rhs(t, y):
@@ -484,7 +554,13 @@ def air_drag_fall(
 ) -> dict:
     """
     1D fall with linear drag:  F = −m g − b v  (positive up).
-    Terminal speed = m g / b.  Returns t, y, v plus v_terminal.
+    Terminal speed = m g / b.
+
+    Returns:
+        t           – time array [s] (numpy)
+        y           – vertical position array [m], positive up (numpy)
+        v           – vertical velocity array [m/s] (numpy)
+        v_terminal  – terminal fall speed magnitude m g / b [m/s]
     """
 
     def F(t, x, v):
@@ -577,6 +653,11 @@ def constant_F_to_travel_d_in_t(d: float, t: float, m: float) -> dict:
     """
     Starting from rest under constant net force F, travel distance d in time t.
         d = ½ a t² ⇒ a = 2d/t² , F = m a , W = F d = 2 m d² / t².
+
+    Returns:
+        a  – required acceleration [m/s²]
+        F  – required net force [N]
+        W  – work done = F · d [J]
     """
     a = 2 * d / (t * t)
     F = m * a
@@ -619,6 +700,11 @@ def pendulum_tension(
     given speed v0 at the bottom.
 
     Radial Newton's 2nd law:  T − m g cos θ = m v²/R   ⇒   T = m v²/R + m g cos θ.
+
+    Returns:
+        v  – speed of the bob at angle θ [m/s]
+        T  – string tension at angle θ [N]
+        h  – height risen above the bottom: R (1 − cos θ) [m]
     """
     θ = np.deg2rad(theta_deg)
     v = pendulum_speed_at_angle(v0_bottom, R, theta_deg, g_local)
@@ -689,7 +775,15 @@ def elastic_1d(m1: float, v1i: float, m2: float, v2i: float) -> tuple[float, flo
 
 
 def inelastic_1d(m1: float, v1i: float, m2: float, v2i: float) -> dict:
-    """Perfectly inelastic collision: stuck together. Returns vf and ΔKE (lost)."""
+    """
+    Perfectly inelastic collision: objects stick together after impact.
+
+    Returns:
+        vf            – common final velocity [m/s]
+        Ki            – total kinetic energy before collision [J]
+        Kf            – total kinetic energy after collision [J]
+        energy_lost   – kinetic energy lost: Ki − Kf [J]
+    """
     vf = (m1 * v1i + m2 * v2i) / (m1 + m2)
     Ki = 0.5 * m1 * v1i**2 + 0.5 * m2 * v2i**2
     Kf = 0.5 * (m1 + m2) * vf * vf
@@ -710,6 +804,12 @@ def fusion_energy_split(mass_ratio: float, E_total: float = 1.0) -> dict:
     Momentum conservation: m_H v_H = m_L v_L  ⇒ v_L = mass_ratio · v_H.
     KE ratio:  K_H / K_L = (m_H v_H²) / (m_L v_L²) = 1 / mass_ratio.
     ⇒ heavy fraction = 1 / (1 + mass_ratio).
+
+    Returns:
+        heavy_fraction  – fraction of E_total carried by the heavy product
+        light_fraction  – fraction of E_total carried by the light product
+        E_heavy         – kinetic energy of the heavy product [same units as E_total]
+        E_light         – kinetic energy of the light product [same units as E_total]
     """
     heavy_frac = 1.0 / (1.0 + mass_ratio)
     return dict(
@@ -796,6 +896,12 @@ def bowling_ball_after_release(
         a = −μ_k g
         α = μ_k m g r / I_cm   (friction torque)
         t_roll: solve v0 + a t = r α t
+
+    Returns:
+        a                  – linear acceleration of the CM (negative, decelerating) [m/s²]
+        alpha              – angular acceleration (positive, spinning up) [rad/s²]
+        t_pure_rolling     – time until pure rolling begins [s]
+        v_at_pure_rolling  – CM speed when pure rolling starts [m/s]
     """
     I_cm = I_solid_sphere(m, r)
     a = -mu_k * g_local
@@ -818,7 +924,11 @@ def collide_disc_drop(I1: float, omega1: float, I2_falling: float) -> dict:
     torque about the vertical axis).  Linear KE of fall is lost on impact;
     rotational KE then decreases as friction equalises ω.
 
-    Returns final common ω and the rotational-KE loss.
+    Returns:
+        omega_final  – common angular velocity after the discs equalise [rad/s]
+        K_rot_i      – rotational kinetic energy before impact [J]
+        K_rot_f      – rotational kinetic energy after equalising [J]
+        K_lost_rot   – rotational KE lost to friction between the discs [J]
     """
     omega_f = I1 * omega1 / (I1 + I2_falling)
     K_rot_i = 0.5 * I1 * omega1**2

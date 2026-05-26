@@ -179,6 +179,47 @@ $
   ]
 ]
 
+=== Manual error propagation — step by step
+
+#note-box()[
+  *Procedure for any $f(x_1, ..., x_n)$:*
+
+  + Write out the formula for $f$ explicitly.
+  + For each uncertain variable $x_i$, compute the partial derivative $pdv(f, x_i)$ (treat all other variables as constants).
+  + Evaluate each partial derivative at the central values.
+  + Compute each term's contribution: $abs(pdv(f, x_i)) dot sigma_i$.
+  + Combine in quadrature: $sigma_f = sqrt(sum_i (pdv(f, x_i) dot sigma_i)^2)$.
+
+  *Identifying the dominant term:* compare the individual contributions $abs(pdv(f, x_i)) dot sigma_i$ before squaring — the largest one dominates $sigma_f$.
+]
+
+#example(title: [Manual propagation for $t = (v_0 + sqrt(v_0^2 + 2 g h))/g$])[
+  Partial derivatives needed: $pdv(t, v_0)$, $pdv(t, h)$, $pdv(t, g)$.
+
+  Let $D = sqrt(v_0^2 + 2 g h)$. Then:
+  $
+    pdv(t, v_0) = 1/g (1 + v_0/D), quad
+    pdv(t, h)   = 1/D, quad
+    pdv(t, g)   = -(v_0 + D)/g^2
+  $
+
+  Plug in $v_0 = 4.20$, $h = 1.60$, $g = 9.82$, $D = 7.004$:
+  $
+    pdv(t, v_0) dot sigma_(v_0) = 0.178 dot 0.05 = 0.0089 #text(" s")
+  $
+  $
+    pdv(t, h) dot sigma_h = 0.143 dot 0.05 = 0.0071 #text(" s")
+  $
+  $
+    pdv(t, g) dot sigma_g = 0.116 dot 0.01 = 0.0012 #text(" s")
+  $
+  $
+    sigma_t = sqrt(0.0089^2 + 0.0071^2 + 0.0012^2) = 0.011 #text(" s")
+  $
+
+  Dominant: $v_0$ term. Order: $delta v_0 > delta h > delta g$.
+]
+
 #pagebreak()
 
 = Kinematics 1D
@@ -666,6 +707,36 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   For each object: 1 gravity + 1 normal/contact pair per contact surface + 1 friction per rough contact surface + applied forces.
 
   *Checklist — N3 pairs:* Each contact force on A from B has a partner force on B from A. If you can't find the partner, you *missed* a force.
+]
+
+== Static vs Kinetic Friction
+
+#definition(title: [Two friction regimes])[
+  *Static friction* — object is not sliding:
+  $
+    f_s <= mu_s N quad (#text("inequality — only as large as needed to prevent motion"))
+  $
+
+  *Kinetic friction* — object is already sliding:
+  $
+    f_k = mu_k N quad (#text("fixed magnitude, opposes direction of motion"))
+  $
+
+  Always $mu_k < mu_s$: it takes more force to start sliding than to keep sliding.
+]
+
+#important[
+  *Decision procedure:*
+
+  + *Check if static friction can hold:* compute the force needed to keep the object stationary. If $F_("needed") <= mu_s N$ $->$ no sliding, use $f_s = F_("needed")$.
+  + *If it exceeds $mu_s N$:* sliding occurs. Switch to $f_k = mu_k N$ and apply Newton's 2nd law.
+  + *Never use $mu_s$ once the object is moving.* Always $mu_k$ during motion.
+
+  *On an incline:* block stays put if $tan theta <= mu_s$. Once sliding, $a = g(sin theta - mu_k cos theta)$.
+]
+
+#math-hint()[
+  *Common exam trap:* the problem gives both $mu_s$ and $mu_k$. You must first *check* whether the object slips (static test), then use the correct coefficient. Using $mu_s$ in a dynamic situation or $mu_k$ before checking for slip are the two most common errors.
 ]
 
 == Stacked Blocks with Force on the Middle One (E24 Q7-Q10)
