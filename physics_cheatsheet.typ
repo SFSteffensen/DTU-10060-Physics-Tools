@@ -191,6 +191,94 @@
     [Angular momentum cons.],
     [$I_1 omega_1 = I_2 omega_2$],
     [$I_1=2, omega_1=5, I_2=4 => omega_2=2.5$ rad/s],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Projectile Motion —*],
+    [Horizontal position],
+    [$x(t) = v_0 cos theta dot t$],
+    [$v_0=20, theta=30°, t=2 => x=34.6$ m],
+
+    [Vertical position],
+    [$y(t) = v_0 sin theta dot t - 1/2 g t^2$],
+    [$v_0=20, theta=30°, t=1 => y=5.1$ m],
+
+    [Range (same height)],
+    [$R = v_0^2 sin(2 theta) / g$],
+    [$v_0=20, theta=45° => R=40.8$ m],
+
+    [Max height (same height)],
+    [$h_max = v_0^2 sin^2 theta / (2 g)$],
+    [$v_0=20, theta=30° => h_max=5.1$ m],
+
+    [Time of flight],
+    [$T = 2 v_0 sin theta / g$],
+    [$v_0=20, theta=30° => T=2.04$ s],
+
+    [Speed at any height],
+    [$v^2 = v_0^2 - 2 g (y - y_0)$],
+    [$v_0=20, Delta y=5 => v=17.4$ m/s],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Circular Motion —*],
+    [Centripetal accel.],
+    [$a_c = v^2 / r = omega^2 r$],
+    [$v=10, r=2 => a_c=50$ m/s²],
+
+    [Angular velocity],
+    [$omega = 2 pi / T = 2 pi f$],
+    [$T=0.5 => omega=12.6$ rad/s],
+
+    [rpm to rad/s],
+    [$omega = "rpm" times 2 pi / 60$],
+    [$1000 "rpm" => omega=104.7$ rad/s],
+
+    [Centripetal force],
+    [$F_c = m v^2 / r$],
+    [$m=2, v=10, r=2 => F_c=100$ N],
+
+    [Banked curve (no friction)],
+    [$tan theta = v^2 / (g r)$],
+    [$v=20, r=100 => theta=22°$],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Pendulum & Springs —*],
+    [Pendulum height risen],
+    [$h = R(1 - cos theta)$],
+    [$R=1, theta=60° => h=0.5$ m],
+
+    [Pendulum speed at angle],
+    [$v^2 = v_0^2 - 2 g R(1 - cos theta)$],
+    [$v_0=4, R=1, theta=90° => v=2.2$ m/s],
+
+    [Pendulum string tension],
+    [$T = m v^2/R + m g cos theta$],
+    [$m=1, v=4, R=1, theta=0° => T=25.6$ N],
+
+    [Min speed at loop top],
+    [$v_"top" = sqrt(g R)$],
+    [$R=2 => v_"top"=4.43$ m/s],
+
+    [Min height for loop],
+    [$h_"min" = 5R/2$],
+    [$R=2 => h_"min"=5$ m],
+
+    [Spring launch speed],
+    [$v = x sqrt(k / m)$],
+    [$k=500, x=0.1, m=0.5 => v=3.16$ m/s],
+
+    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Error Propagation —*],
+    [Sum/difference],
+    [$sigma_f = sqrt(sigma_a^2 + sigma_b^2)$],
+    [$sigma_a=0.1, sigma_b=0.1 => sigma_f=0.141$],
+
+    [Product/quotient (relative)],
+    [$(sigma_f/f)^2 = (sigma_a/a)^2 + (sigma_b/b)^2$],
+    [$a=10 plus.minus 0.2, b=5 plus.minus 0.1 => sigma_f/f=2.83%$],
+
+    [Power rule],
+    [$sigma_f / f = abs(n) sigma_a / a$],
+    [$f=a^3, sigma_a/a=1% => sigma_f/f=3%$],
+
+    [General (Gaussian)],
+    [$sigma_f = sqrt(sum_i (pdv(f,x_i) sigma_i)^2)$],
+    [Compute each $|partial f/partial x_i| sigma_i$, add in quadrature],
   )
 ]
 
