@@ -82,14 +82,14 @@
 == Sample statistics
 
 #definition(title: [Empirical mean and standard deviation])[
-  For $n$ measurements ${x_1, ..., x_n}$:
-  $
-    overline(x) = 1/n sum_(i=1)^n x_i, quad s = sqrt(1/(n-1) sum_(i=1)^n (x_i - overline(x))^2)
-  $
+For $n$ measurements ${x_1, ..., x_n}$:
+$
+  overline(x) = 1/n sum_(i=1)^n x_i, quad s = sqrt(1/(n-1) sum_(i=1)^n (x_i - overline(x))^2)
+$
 
-  *Important:* Use $n - 1$ in the denominator (Bessel correction). In `numpy` this corresponds to `ddof=1`.
+*Important:* Use $n - 1$ in the denominator (Bessel correction). In `numpy` this corresponds to `ddof=1`.
 
-  Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
+Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
 ]
 
 #note-box()[
@@ -153,7 +153,8 @@ $
   $
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *Special cases:*
   - *Sum/difference:* $f = a + b ==> sigma_f = sqrt(sigma_a^2 + sigma_b^2)$.
   - *Product/quotient:* $f = a b$ or $a / b ==> (sigma_f / f)^2 = (sigma_a/a)^2 + (sigma_b/b)^2$ (relative error).
@@ -162,7 +163,9 @@ $
   *Note:* To find which variable contributes most to the uncertainty, compute $abs(pdv(f, x_i)) sigma_i$ for each $i$ — the largest is the dominant one.
 ]
 
-#example(title: [E24 Q1: Free fall with uncertainty])[
+#example(
+  title: [E24 Q1: Free fall with uncertainty],
+)[
   Stone thrown upward from $h = 1.60 plus.minus 0.05$ m with $v_0 = 4.20 plus.minus 0.05$ m/s, $g = 9.82 plus.minus 0.01$ m/s². Find $t$ when the stone hits the ground.
 
   #solution()[
@@ -185,10 +188,10 @@ $
 #important[
   The four basic formulas — without time, without distance, etc.:
   $
-    & v = v_0 + a t & quad #text("(without") Delta x #text(")") \
-    & Delta x = v_0 t + 1/2 a t^2 & quad #text("(without") v #text(")") \
-    & v^2 = v_0^2 + 2 a Delta x & quad #text("(without") t #text(")") \
-    & Delta x = 1/2 (v_0 + v) t & quad #text("(without") a #text(")")
+      & v = v_0 + a t               & quad #text("(without") Delta x #text(")") \
+      & Delta x = v_0 t + 1/2 a t^2 & quad #text("(without") v #text(")") \
+      & v^2 = v_0^2 + 2 a Delta x   & quad #text("(without") t #text(")") \
+      & Delta x = 1/2 (v_0 + v) t   & quad #text("(without") a #text(")")
   $
 
   *Choose formula based on which variable is missing.*
@@ -213,7 +216,8 @@ $
 
 == Meeting Problem (two objects)
 
-#math-hint()[
+#math-hint(
+  )[
   *Trick:* Set up the equation $y_A(t) = y_B(t)$ and solve for $t$. If both have $-1/2 g t^2$, *$g$ cancels* — set the $g$-term aside and solve a linear equation!
 ]
 
@@ -243,53 +247,50 @@ $
   - Straight line $->$ constant velocity, $a = 0$.
 ]
 
-#example(title: [Ch 3 P7: Area under v-t])[
-  #align(center)[
-    #cetz.canvas(length: 1cm, {
-      import cetz.draw: *
+#example(
+  title: [Ch 3 P7: Area under v-t],
+)[
+  #align(
+    center,
+  )[
+    #cetz.canvas(
+      length: 1cm,
+      {
+        import cetz.draw: *
 
-      set-style(axes: (
-          x: (
-            tick: (label: (offset: 0.34)),
-            label: (offset: 1.2),
-            padding: 0,
-          ),
-        ))
-      
-      plot.plot(
-        size: (7.2, 3.4),
-        axis-style: "school-book",
-        x-label: [$t$ (s)],
-        y-label: [$v$ (m/s)],
-        x-min: 0,
-        x-max: 8,
-        y-min: -5,
-        y-max: 10,
-        x-tick-step: none,
-        y-tick-step: none,
-        x-ticks: (1, 2, 3, 4, 5, 6.4, 7, 8),
-        y-ticks: (-5, 5, 10),
-        {
-          plot.add-fill-between(
-            ((0, 10), (2, 10), (4, 5), (5, 5), (6.4, 0)),
-            ((0, 0), (2, 0), (4, 0), (5, 0), (6.4, 0)),
-            style: (fill: blue.lighten(82%), stroke: none),
-          )
-          plot.add-fill-between(
-            ((6.4, 0), (8, -5)),
-            ((6.4, 0), (8, 0)),
-            style: (fill: red.lighten(84%), stroke: none),
-          )
-          plot.add(
-            ((0, 10), (2, 10), (4, 5), (5, 5), (6.4, 0), (8, -5)),
-            style: (stroke: rgb("#cc2f2f") + 1.4pt),
-            mark: "o",
-            mark-size: 0.12,
-            mark-style: (fill: rgb("#cc2f2f"), stroke: none),
-          )
-        },
-      )
-    })
+        set-style(axes: (x: (tick: (label: (offset: 0.34)), label: (offset: 1.2), padding: 0)))
+
+        plot.plot(
+          size: (7.2, 3.4),
+          axis-style: "school-book",
+          x-label: [$t$ (s)],
+          y-label: [$v$ (m/s)],
+          x-min: 0,
+          x-max: 8,
+          y-min: -5,
+          y-max: 10,
+          x-tick-step: none,
+          y-tick-step: none,
+          x-ticks: (1, 2, 3, 4, 5, 6.4, 7, 8),
+          y-ticks: (-5, 5, 10),
+          {
+            plot.add-fill-between(
+              ((0, 10), (2, 10), (4, 5), (5, 5), (6.4, 0)),
+              ((0, 0), (2, 0), (4, 0), (5, 0), (6.4, 0)),
+              style: (fill: blue.lighten(82%), stroke: none),
+            )
+            plot.add-fill-between(((6.4, 0), (8, -5)), ((6.4, 0), (8, 0)), style: (fill: red.lighten(84%), stroke: none))
+            plot.add(
+              ((0, 10), (2, 10), (4, 5), (5, 5), (6.4, 0), (8, -5)),
+              style: (stroke: rgb("#cc2f2f") + 1.4pt),
+              mark: "o",
+              mark-size: 0.12,
+              mark-style: (fill: rgb("#cc2f2f"), stroke: none),
+            )
+          },
+        )
+      },
+    )
   ]
 
   Area from $0$ to $4$ s: triangle + rectangle + triangle
@@ -302,7 +303,8 @@ $
 
 == Braking Distance (car collision type)
 
-#note-box()[
+#note-box(
+  )[
   *Procedure — "Will they collide?":*
 
   + Compute braking distance: $Delta x = -v_0^2 / (2 a)$ (final velocity = 0).
@@ -398,7 +400,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   *Vectors in 2D:* same formula, just as vectors.
 ]
 
-#example(title: [E25 Q4: Boat and river])[
+#example(
+  title: [E25 Q4: Boat and river],
+)[
   Boat's speed in water $= v$, water's speed $= v_0$. Time with the current to travel distance $L$: $T$. Time against the current: $2 T$.
 
   #solution()[
@@ -408,7 +412,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   ]
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *Symbolic answer — no numbers!* When the answer should be a ratio (here $v$ expressed in $v_0$), there is NO numerical calculation. Find the equation, do symbolic algebra.
 ]
 
@@ -446,7 +451,164 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Bird-dive style problem (E25 Q5)
 
-// TODO: copy the figure found in the exam pdf. (8 different graphs, where C is correct)
+// Helper: draw one a_y vs t panel
+// ox, oy = canvas origin of this panel
+// label = "A".."H"
+// curve-fn = function that takes draw context and draws the curve
+#let panel(ox, oy, label, draw-curve) = {
+  import cetz.draw: *
+  let w = 3.8
+  let h = 3.0
+  let mx = 0.5 // x margin before axis
+  let my = 0.6 // y margin below axis
+
+  group({
+    translate((ox, oy))
+
+    // y-axis (a_y)
+    line((mx, my), (mx, my + h), mark: (end: ">", size: 0.18), stroke: black + 1pt)
+    content((mx - 0.15, my + h), [$a_y$], anchor: "east")
+
+    // x-axis (t)
+    line((mx, my + h * 0.5), (mx + w, my + h * 0.5), mark: (end: ">", size: 0.18), stroke: black + 1pt)
+    content((mx + w + 0.05, my + h * 0.5 - 0.05), [$t$], anchor: "north-west")
+
+    // panel label (top-left inside)
+    content((mx + 0.25, my + h - 0.15), [*#label*], anchor: "north-west")
+
+    // curve (drawn in local coords where zero = axis midline)
+    // axis zero is at (mx, my + h*0.5)
+    draw-curve(mx, my + h * 0.5, w)
+  })
+}
+
+#cetz.canvas(
+  {
+    import cetz.draw: *
+
+    let blue = rgb("#4ea8d2")
+    let sty = (stroke: blue + 1.5pt)
+
+    // --- Curve definitions ---
+    // Each gets (x0, y0, w) where x0,y0 is the axis zero point, w is plot width
+
+    // A: single positive pulse
+    let curveA = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.3, y0),
+        (x0 + 0.7, y0),
+        (x0 + 1.1, y0 + 0.85),
+        (x0 + 1.5, y0),
+        (x0 + 1.9, y0),
+        (x0 + w - 0.2, y0),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // B: single negative pulse
+    let curveB = (x0, y0, w) => {
+      catmull((x0 + 0.3, y0), (x0 + 0.8, y0), (x0 + 1.3, y0 - 0.95), (x0 + 1.8, y0), (x0 + w - 0.2, y0), tension: 0.5, ..sty)
+    }
+
+    // C: negative pulse then positive pulse (CORRECT: 0 → neg → pos → 0)
+    let curveC = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0),
+        (x0 + 0.5, y0),
+        (x0 + 0.9, y0 - 0.75),
+        (x0 + 1.3, y0),
+        (x0 + 1.7, y0 + 0.6),
+        (x0 + 2.1, y0),
+        (x0 + w - 0.2, y0),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // D: positive pulse then negative pulse (reversed order)
+    let curveD = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0),
+        (x0 + 0.5, y0),
+        (x0 + 0.9, y0 + 0.6),
+        (x0 + 1.3, y0),
+        (x0 + 1.7, y0 - 0.75),
+        (x0 + 2.1, y0),
+        (x0 + w - 0.2, y0),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // E: step up (0 → positive constant)
+    let curveE = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0),
+        (x0 + 0.8, y0),
+        (x0 + 1.2, y0 + 0.7),
+        (x0 + 1.6, y0 + 0.82),
+        (x0 + w - 0.2, y0 + 0.82),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // F: step down (0 → negative constant)
+    let curveF = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0),
+        (x0 + 0.8, y0),
+        (x0 + 1.2, y0 - 0.7),
+        (x0 + 1.6, y0 - 0.82),
+        (x0 + w - 0.2, y0 - 0.82),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // G: positive constant then step down to 0
+    let curveG = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0 + 0.82),
+        (x0 + 0.8, y0 + 0.82),
+        (x0 + 1.3, y0 + 0.82),
+        (x0 + 1.7, y0 + 0.3),
+        (x0 + 2.1, y0),
+        (x0 + w - 0.2, y0),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // H: negative constant then step up to 0
+    let curveH = (x0, y0, w) => {
+      catmull(
+        (x0 + 0.2, y0 - 0.82),
+        (x0 + 0.8, y0 - 0.82),
+        (x0 + 1.3, y0 - 0.82),
+        (x0 + 1.7, y0 - 0.3),
+        (x0 + 2.1, y0),
+        (x0 + w - 0.2, y0),
+        tension: 0.5,
+        ..sty,
+      )
+    }
+
+    // Layout: 4 columns × 2 rows, col spacing = 4.5, row spacing = 4.2
+    let cs = 4.5
+    let rs = 4.2
+
+    panel(0 * cs, 1 * rs, "A", curveA)
+    panel(1 * cs, 1 * rs, "B", curveB)
+    panel(2 * cs, 1 * rs, "C", curveC)
+    panel(3 * cs, 1 * rs, "D", curveD)
+    panel(0 * cs, 0 * rs, "E", curveE)
+    panel(1 * cs, 0 * rs, "F", curveF)
+    panel(2 * cs, 0 * rs, "G", curveG)
+    panel(3 * cs, 0 * rs, "H", curveH)
+  },
+)
 
 #note-box()[
   *Bird flying horizontally high, dives, then horizontal low:*
@@ -465,7 +627,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == The Three Newton's Laws
 
-#definition(title: [Newton's Laws])[
+#definition(
+  title: [Newton's Laws],
+)[
   *N1 (inertia):* An object continues with constant $va(v)$ unless net force $sum va(F) eq.not 0$.
 
   *N2:* $sum va(F) = m va(a)$ (vectorial, one component at a time).
@@ -495,7 +659,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   + *Write Newton's 2nd law* for each axis separately.
 ]
 
-#note-box()[
+#note-box(
+  )[
   *Counting forces in stacked systems (E24 Q8-Q10):*
 
   For each object: 1 gravity + 1 normal/contact pair per contact surface + 1 friction per rough contact surface + applied forces.
@@ -509,13 +674,7 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   #cetz.canvas(length: 0.9cm, {
     import cetz.draw: *
 
-    set-style(
-      rect: (
-        stroke: rgb("#2d3748") + 0.9pt,
-        fill: rgb("#edf2f7"),
-      ),
-      content: (padding: 0.08),
-    )
+    set-style(rect: (stroke: rgb("#2d3748") + 0.9pt, fill: rgb("#edf2f7")), content: (padding: 0.08))
 
     let w_3 = 2.25
     let w_2 = 1.75
@@ -535,10 +694,7 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
     content("m2.center", [$m_2$])
     content("m3.center", [$m_3$])
 
-    line("m2.east", (w_2 + 1.65, 1.5 * h),
-      stroke: rgb("#cc2f2f") + 1.3pt,
-      mark: (end: ">"),
-    )
+    line("m2.east", (w_2 + 1.65, 1.5 * h), stroke: rgb("#cc2f2f") + 1.3pt, mark: (end: ">"))
     content((w_1 + 1.78, 2 * h), [$va(F)$], anchor: "west")
   })
 ]
@@ -567,13 +723,104 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   - friction from floor (backward — opposite to motion)
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *General rule:* Per contact surface there is ALWAYS an N3 pair (normal + normal) and *possibly* an N3 pair (friction + friction). Count contact surfaces on the object $->$ 2 (normal+friction) times that number.
 ]
 
 == Block on Inclined Plane
 
-// TODO: Draw inclined plane with angle theta. Block m on the plane. Draw tilted coordinate system (x along plane, y perpendicular). Show components of m*g (m*g*sin theta along x downward, m*g*cos theta along y into the plane).
+#cetz.canvas({
+  import cetz.draw: *
+
+  let theta = 30deg // incline angle
+
+  // ── Geometry constants ──────────────────────────────────────────
+  let base = 6.0 // horizontal base length
+  let height = base * calc.tan(theta) // = base * tan(30°)
+
+  // Key world-space points
+  let O = (0, 0) // bottom-left corner
+  let Br = (base, 0) // bottom-right corner
+  let T = (base, height) // top of incline (right angle at Br)
+
+  // Block sits at ~60% along the slope from O
+  let t_block = 0.58
+  let bx = base * t_block
+  let by = height * t_block
+  let block_pos = (bx, by) // bottom-centre of block (on the slope)
+
+  // ── Filled inclined plane ────────────────────────────────────────
+  line(O, Br, T, O, fill: rgb("#d9e8f5"), stroke: black + 1.2pt, close: true)
+
+  // ── Right-angle marker at bottom-right ───────────────────────────
+  let sq = 0.22
+  line((base - sq, 0), (base - sq, sq), (base, sq), stroke: black + 0.8pt)
+
+  // ── Theta arc and label ──────────────────────────────────────────
+  arc((1, 0), start: 0deg, stop: theta, radius: 1, stroke: black + 0.9pt, name: "arc")
+  content((0.70, 0.18), [$30°$])
+
+  // ── Block (drawn in tilted coordinate scope) ─────────────────────
+  let bw = 0.55 // block half-width along slope
+  let bh = 0.55 // block half-height perp to slope
+
+  scope({
+    translate(block_pos)
+    rotate(theta)
+    rect((-bw, 0), (bw, bh), fill: rgb("#f0c060"), stroke: black + 1.2pt, name: "blk")
+    content((0, bh / 2), [$m$])
+  })
+
+  // ── Direction unit vectors ────────────────────────────────────────
+  let xd = (-calc.cos(theta), -calc.sin(theta)) // down the slope
+  let yd = (-calc.sin(theta), calc.cos(theta)) // perp, away from surface
+  let neg_yd = (calc.sin(theta), -calc.cos(theta)) // into the surface
+
+  // ── All vectors originate from block centre ───────────────────────
+  let ax_orig = (block_pos.at(0) + (bh / 2) * yd.at(0), block_pos.at(1) + (bh / 2) * yd.at(1))
+
+  // ── Tilted coordinate axes ────────────────────────────────────────
+  let ax_len = 1.4
+  let x_tip = (ax_orig.at(0) + ax_len * xd.at(0), ax_orig.at(1) + ax_len * xd.at(1))
+  let y_tip = (ax_orig.at(0) + ax_len * yd.at(0), ax_orig.at(1) + ax_len * yd.at(1))
+
+  set-style(stroke: rgb("#c0392b") + 1pt)
+  line(ax_orig, x_tip, mark: (end: ">", size: 0.18))
+  line(ax_orig, y_tip, mark: (end: ">", size: 0.18))
+  content((x_tip.at(0) - 0.12, x_tip.at(1) - 0.22), [$x$], stroke: none, fill: rgb("#c0392b"))
+  content((y_tip.at(0) - 0.28, y_tip.at(1) + 0.05), [$y$], stroke: none, fill: rgb("#c0392b"))
+
+  // ── Gravity vector (straight down from block centre) ─────────────
+  let g_len = 1.8
+  let g_tip = (ax_orig.at(0), ax_orig.at(1) - g_len)
+
+  set-style(stroke: rgb("#27ae60") + 1.5pt)
+  line(ax_orig, g_tip, mark: (end: ">", size: 0.2), name: "gvec")
+  content((g_tip.at(0) + 0.25, g_tip.at(1) + 0.1), [$m g$], stroke: none, fill: rgb("#27ae60"))
+
+  // ── Components ────────────────────────────────────────────────────
+  let sin_comp = g_len * calc.sin(theta)
+  let cos_comp = g_len * calc.cos(theta)
+
+  let sin_tip = (ax_orig.at(0) + sin_comp * xd.at(0), ax_orig.at(1) + sin_comp * xd.at(1))
+  let cos_tip = (ax_orig.at(0) + cos_comp * neg_yd.at(0), ax_orig.at(1) + cos_comp * neg_yd.at(1))
+
+  // Dashed construction lines
+  set-style(stroke: (paint: gray, dash: "dashed", thickness: 0.7pt))
+  line(g_tip, sin_tip)
+  line(g_tip, cos_tip)
+
+  // sin component arrow
+  set-style(stroke: rgb("#8e44ad") + 1.5pt)
+  line(ax_orig, sin_tip, mark: (end: ">", size: 0.18))
+  content((sin_tip.at(0) - 0.05, sin_tip.at(1) - 0.32), [$m g sin(30°)$], stroke: none, fill: rgb("#8e44ad"))
+
+  // cos component arrow
+  set-style(stroke: rgb("#e67e22") + 1.5pt)
+  line(ax_orig, cos_tip, mark: (end: ">", size: 0.18))
+  content((cos_tip.at(0) + 0.75, cos_tip.at(1) + 0.1), [$m g cos(30°)$], stroke: none, fill: rgb("#e67e22"))
+})
 
 #important[
   *Standard results for block on inclined plane, angle $theta$:*
@@ -619,7 +866,75 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Atwood and Atwood-on-Incline
 
-// TODO: Draw inclined plane with block M on the plane, connected via string over a pulley at the top to a hanging block m.
+#align(center)[
+  #cetz.canvas(length: 0.9cm, {
+    import cetz.draw: *
+
+    let theta = 30deg
+    let base = 5.8
+    let height = base * calc.tan(theta)
+    let O = (0, 0)
+    let Br = (base, 0)
+    let T = (base, height)
+
+    let u = (calc.cos(theta), calc.sin(theta))
+    let n = (-calc.sin(theta), calc.cos(theta))
+    let along(t) = (base * t, height * t)
+    let add(p, q) = (p.at(0) + q.at(0), p.at(1) + q.at(1))
+    let mul(s, p) = (s * p.at(0), s * p.at(1))
+
+    line(O, Br, T, O, close: true, fill: rgb("#d9e8f5"), stroke: black + 1.1pt)
+    arc((0.9, 0), start: 0deg, stop: theta, radius: 0.85, stroke: black + 0.8pt)
+    content((0.72, 0.16), [$30 degree$])
+
+    let block-base = along(0.55)
+    let bw = 0.48
+    let bh = 0.52
+    let block-center = add(block-base, mul(bh / 2, n))
+    let block-top-uphill = add(add(block-base, mul(bw, u)), mul(bh, n))
+
+    scope({
+      translate(block-base)
+      rotate(theta)
+      rect((-bw, 0), (bw, bh), fill: rgb("#f0c060"), stroke: black + 1.1pt, name: "block-M")
+      content((0, bh / 2), [$M$])
+    })
+
+    let pulley-r = 0.34
+    let pulley-c = add(T, mul(0.54, n))
+    let pulley-slope = add(pulley-c, mul(-pulley-r, n))
+    let pulley-right = add(pulley-c, (pulley-r, 0))
+    let hang-top = add(pulley-right, (0, -1.25))
+    let hang-w = 0.72
+    let hang-h = 0.72
+
+    line(block-top-uphill, pulley-slope, stroke: rgb("#2d3748") + 1pt)
+    line(pulley-right, hang-top, stroke: rgb("#2d3748") + 1pt)
+    circle(pulley-c, radius: pulley-r, fill: white, stroke: black + 1.1pt)
+    circle(pulley-c, radius: 0.05, fill: black, stroke: none)
+    line(add(pulley-c, (0, pulley-r)), add(pulley-c, (0.45, pulley-r + 0.4)), stroke: black + 0.8pt)
+    line(add(pulley-c, (0.45, pulley-r + 0.4)), add(pulley-c, (0.85, pulley-r + 0.4)), stroke: black + 0.8pt)
+
+    rect(
+      (hang-top.at(0) - hang-w / 2, hang-top.at(1) - hang-h),
+      (hang-top.at(0) + hang-w / 2, hang-top.at(1)),
+      fill: rgb("#edf2f7"),
+      stroke: black + 1.1pt,
+      name: "block-m",
+    )
+    content("block-m.center", [$m$])
+
+    line(block-center, add(block-center, mul(0.95, u)), stroke: rgb("#cc2f2f") + 1.1pt, mark: (end: ">"))
+    content(add(block-center, mul(1.08, u)), [$S$], anchor: "west")
+    line(
+      (hang-top.at(0), hang-top.at(1) - hang-h / 2),
+      (hang-top.at(0), hang-top.at(1) - hang-h / 2 + 0.85),
+      stroke: rgb("#cc2f2f") + 1.1pt,
+      mark: (end: ">"),
+    )
+    content((hang-top.at(0) + 0.18, hang-top.at(1) - hang-h / 2 + 0.55), [$S$], anchor: "west")
+  })
+]
 
 #note-box()[
   *Procedure for coupled systems:*
@@ -631,10 +946,13 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   + *Add the equations* — tension cancels, and you can isolate $a$.
 ]
 
-#example(title: [Ch 6 P5: Atwood on incline, with friction])[
+#example(
+  title: [Ch 6 P5: Atwood on incline, with friction],
+)[
   Block $M$ on inclined plane (angle $theta$, rough, $mu_k$), connected by string over pulley to hanging block $m$.
 
-  #solution()[
+  #solution(
+    )[
     N2($M$, along plane, up is positive): $M a = M g sin theta - S - mu_k M g cos theta$
 
     N2($m$, vertical, down is positive for m): $m a = m g - S$
@@ -664,7 +982,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   - *Conical pendulum:* horizontal component of tension.
 ]
 
-#example(title: [Ch 6 P8: Coin on rotating disk])[
+#example(
+  title: [Ch 6 P8: Coin on rotating disk],
+)[
   Coin at distance $R/2$ from center. Static friction $mu_s$ is the only horizontal force. Find $T$ (period) when the coin begins to slide.
 
   #solution()[
@@ -713,7 +1033,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Friction from Deceleration
 
-#math-hint()[
+#math-hint(
+  )[
   *Classic trick:* If an object decelerates solely due to friction on a horizontal surface, and you have the $v(t)$ graph:
   $
     abs(a) = abs(Delta v / Delta t) ==> mu_k = abs(a) / g
@@ -762,8 +1083,8 @@ $
 == Numerical Solution (SciPy)
 
 #math-hint()[
-  *In practice at exam:* Use `solve_ivp`:
-  ```python
+*In practice at exam:* Use `solve_ivp`:
+```python
   from scipy.integrate import solve_ivp
   def rhs(t, y):
       x, v = y
@@ -832,10 +1153,13 @@ Conservative force: $F = -(dd(U))/(dd(x))$.
   + Specifically: $W_("friction") = -mu_k n dot d$ (negative!).
 ]
 
-#example(title: [Ch 7 P2: Block with angled force])[
+#example(
+  title: [Ch 7 P2: Block with angled force],
+)[
   Block $m$ pulled with force $F$ at angle $theta$. Find speed after length $L$ from rest.
 
-  #solution()[
+  #solution(
+    )[
     *Smooth surface:* Only $F$ does work.
     $W = F cos theta dot L = 1/2 m v^2 ==> v = sqrt((2 F cos theta L) / m)$.
 
@@ -861,10 +1185,13 @@ Conservative force: $F = -(dd(U))/(dd(x))$.
 
 == Spring + Smooth Incline + Friction (classic exam)
 
-#example(title: [Ch 7 P4: Hill + rough surface + spring])[
+#example(
+  title: [Ch 7 P4: Hill + rough surface + spring],
+)[
   Block $m = 5$ kg starts on upper platform with $v_1 = 5$ m/s, falls height $h = 12$ m, arrives with $v_2 = 10$ m/s. Slides $ell = 9.5$ m on rough surface ($mu_k = 0.35$), then hits spring ($k = 1000$ N/m), compresses distance $d$.
 
-  #solution()[
+  #solution(
+    )[
     *a) Work of friction from 1 to 2:* Use energy conservation between 1 and 2:
     $
       1/2 m v_1^2 + m g h + W_("friction") = 1/2 m v_2^2
@@ -923,7 +1250,8 @@ $
 Minimum speed at top of vertical loop: $v_("top") = sqrt(g R)$.
 Minimum speed at bottom: $v_("bottom") = sqrt(5 g R)$ (energy conservation from bottom to top, $Delta h = 2R$).
 
-#math-hint()[
+#math-hint(
+  )[
   *Classic block-from-ramp-to-loop:* Minimum starting height to complete loop with radius $R$:
   $
     h_("min") = 2.5 R = 5R/2
@@ -960,7 +1288,160 @@ $
 
 == Drawing $E_m(t)$ (E25 Q14)
 
-// TODO: Draw 4 graphs side by side, each with E_m(t). The correct one: constant (flat), then sudden drop at time t1 (collision), then gradual decline (friction), then flat again.
+#cetz.canvas({
+  import cetz.draw: *
+
+  let blue = rgb("#3a6ea5")
+  let sty = (stroke: blue + 1.8pt)
+
+  let panel(ox, oy, label, draw-curve) = {
+    let w = 3.8
+    let h = 3.0
+    let mx = 0.7
+    let my = 0.5
+
+    group({
+      translate((ox, oy))
+
+      // axes
+      line((mx, my), (mx, my + h), mark: (end: ">", size: 0.18), stroke: black + 1pt)
+      line((mx, my), (mx + w, my), mark: (end: ">", size: 0.18), stroke: black + 1pt)
+
+      // axis labels
+      content((mx - 0.15, my + h), [$E_m$], anchor: "east")
+      content((mx + w + 0.05, my - 0.05), [$t$], anchor: "north-west")
+
+      // panel label
+      content((mx + 0.25, my + 0.35), [*#label*], anchor: "south-west")
+
+      draw-curve(mx, my, w, h)
+    })
+  }
+
+  // Each curve gets (mx, my, w, h) — plot in those local coords
+  // y values are offsets from my; typical Em range mapped to ~0.4*h .. 0.85*h
+
+  // A: rises slightly then two linear drops with a kink (zigzag down)
+  let curveA = (mx, my, w, h) => {
+    catmull(
+      (mx, my + 2 * 0.88),
+      (mx + 1, my + h * 0.88),
+      (mx + 2.3, my + h * 0.42),
+      (mx + 3.2, my + h * 0.42),
+      tension: 1,
+      ..sty,
+    )
+  }
+
+  // B: flat high, sharp drop, flat low
+  let curveB = (mx, my, w, h) => {
+    catmull(
+      (mx + 0, my + h * 0.62),
+      (mx + 1.0, my + h * 0.82),
+      (mx + 1.0, my + h * 0.70),
+      (mx + 2.1, my + h * 0.30),
+      (mx + 3.2, my + h * 0.30),
+      tension: 1,
+      ..sty,
+    )
+  }
+
+  // C: flat high, long smooth ramp down, flat low
+  let curveC = (mx, my, w, h) => {
+    catmull(
+      (mx + 0, my + h * 0.85),
+      (mx + 0.8, my + h * 0.85),
+      (mx + 2.6, my + h * 0.38),
+      (mx + 3.2, my + h * 0.38),
+      tension: 1,
+      ..sty,
+    )
+  }
+
+  // D: flat high, step drop, diagonal drop, flat low
+  let curveD = (mx, my, w, h) => {
+    line(
+      (mx + 0.2, my + h * 0.85),
+      (mx + 1.0, my + h * 0.85),
+      (mx + 1.0, my + h * 0.65),
+      (mx + 1.8, my + h * 0.40),
+      (mx + 3.2, my + h * 0.40),
+      ..sty,
+    )
+  }
+
+  // E: starts mid, bumps to local max (open circle), smooth drop to low flat
+  let curveE = (mx, my, w, h) => {
+    catmull(
+      (mx + 0.2, my + h * 0.58),
+      (mx + 0.7, my + h * 0.62),
+      (mx + 1.05, my + h * 0.72),
+      (mx + 1.5, my + h * 0.60),
+      (mx + 2.1, my + h * 0.45),
+      (mx + 2.8, my + h * 0.35),
+      (mx + 3.2, my + h * 0.35),
+      tension: 0.47,
+      ..sty,
+    )
+  }
+
+  // F: starts mid, small bump (open circle), then steep smooth drop to low flat
+  let curveF = (mx, my, w, h) => {
+    catmull(
+      (mx + 0.2, my + h * 0.50),
+      (mx + 0.6, my + h * 0.54),
+      (mx + 0.95, my + h * 0.62),
+      (mx + 0.95, my + h * 0.50),
+      (mx + 1.9, my + h * 0.30),
+      (mx + 2.6, my + h * 0.22),
+      (mx + 3.2, my + h * 0.21),
+      tension: 0.6,
+      ..sty,
+    )
+  }
+
+  // G: flat high, smooth S-curve drop, flat low
+  let curveG = (mx, my, w, h) => {
+    catmull(
+      (mx + 0.2, my + h * 0.85),
+      (mx + 0.9, my + h * 0.85),
+      (mx + 1.3, my + h * 0.82),
+      (mx + 1.4, my + h * 0.58),
+      (mx + 2, my + h * 0.36),
+      (mx + 2.6, my + h * 0.33),
+      (mx + 3.2, my + h * 0.33),
+      tension: 0.5,
+      ..sty,
+    )
+  }
+
+  // H: flat high, sharp corner down, smooth curve to flat low
+  let curveH = (mx, my, w, h) => {
+    catmull(
+      (mx + 0.2, my + h * 0.85),
+      (mx + 1.1, my + h * 0.85),
+      (mx + 1.15, my + h * 0.84),
+      (mx + 1.3, my + h * 0.72),
+      (mx + 1.7, my + h * 0.48),
+      (mx + 2.2, my + h * 0.32),
+      (mx + 3.2, my + h * 0.32),
+      tension: 1,
+      ..sty,
+    )
+  }
+
+  let cs = 4.6
+  let rs = 4.2
+
+  panel(0 * cs, 1 * rs, "A", curveA)
+  panel(1 * cs, 1 * rs, "B", curveB)
+  panel(2 * cs, 1 * rs, "C", curveC)
+  panel(3 * cs, 1 * rs, "D", curveD)
+  panel(0 * cs, 0 * rs, "E", curveE)
+  panel(1 * cs, 0 * rs, "F", curveF)
+  panel(2 * cs, 0 * rs, "G", curveG)
+  panel(3 * cs, 0 * rs, "H", curveH)
+})
 
 #note-box()[
   *Mechanical energy patterns:*
@@ -1002,10 +1483,13 @@ $
 
 == Stacked Blocks COM Trick (E25 Q7)
 
-#example(title: [E25 Q7: Two stacked blocks, F pulls the top one])[
+#example(
+  title: [E25 Q7: Two stacked blocks, F pulls the top one],
+)[
   $m_1 = m_2 = 1$ kg, $F = 20$ N pulls top, $mu_s = 0.80$, $mu_k = 0.50$.
 
-  #solution()[
+  #solution(
+    )[
     *Do they slide? Check max static:* $f_max = mu_s m_1 g = 0.80 dot 1 dot 9.82 = 7.86$ N.
 
     *If not sliding, common $a$:* $a = F/(m_1 + m_2) = 10$ m/s². Friction required on bottom: $m_2 a = 10$ N. But $10 > 7.86$ $->$ sliding!
@@ -1174,7 +1658,9 @@ $
 
 == Disk-on-Disk (E24 Q13)
 
-#example(title: [E24 Q13: Find $I_2$ from common $omega$])[
+#example(
+  title: [E24 Q13: Find $I_2$ from common $omega$],
+)[
   Disk $I_1$ spins with $omega_1$. Disk $I_2$ (at rest) falls onto it. Common speed after: $omega_2 = (3/5) omega_1$.
 
   #solution()[
@@ -1240,10 +1726,13 @@ $
 
 == String on Pulley — Kinematics (E24 Q12)
 
-#example(title: [E24 Q12: $omega$ vs $y$ for falling block])[
+#example(
+  title: [E24 Q12: $omega$ vs $y$ for falling block],
+)[
   Block $m$ falls from rest, $y$ measured downward. String over pulley (radius $r$) without slipping. Sketch $omega(y)$.
 
-  #solution()[
+  #solution(
+    )[
     Constant net force $->$ constant $a$. From kinematics: $v^2 = 2 a y$, so $v = sqrt(2 a y) prop sqrt(y)$.
 
     No slipping: $omega = v/r prop sqrt(y)$ — *square root of y* $->$ *concave downward* (steep at 0, flatter later).
@@ -1263,7 +1752,9 @@ $
 
 == Circular Motion Structure Problems (E24 Q14)
 
-#example(title: [E24 Q14: Fiber diameter])[
+#example(
+  title: [E24 Q14: Fiber diameter],
+)[
   $m = 50$ kg at $R = 1.0$ m, $v = 100$ m/s. Max tensile strength $sigma_("max") = 1600$ MPa. Find min diameter $d$.
 
   #solution()[
@@ -1313,7 +1804,8 @@ $
 
 == Set Phrases (exam script)
 
-#note-box()[
+#note-box(
+  )[
   *For force-counting questions (E24-style):*
   "Newton's 3rd law says every contact force has a partner. Block $X$ is in contact with ... so the forces are: gravity, normal from ..., friction from ..."
 
@@ -1338,7 +1830,8 @@ $
 
 == Graph Reading Questions
 
-#note-box()[
+#note-box(
+  )[
   *Sequence for "Which graph fits?":*
 
   + Describe the motion qualitatively: where is $v$ constant, where does it accelerate, where are there sudden changes?
