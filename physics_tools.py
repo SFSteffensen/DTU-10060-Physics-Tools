@@ -65,6 +65,16 @@ def sample_stats(data) -> dict:
     return dict(mean=mean, std=std, sem=std / sqrt(n), n=n, min=a.min(), max=a.max())
 
 
+def standard_score(x: float, x_ref: float, sigma: float) -> float:
+    """
+    Standard score (z-score): how many standard deviations x is from x_ref.
+        z = (x − x_ref) / σ
+
+    Guide: |z| ≤ 1 very likely same, 1–2 likely, 2–3 grey zone, >3 unlikely same.
+    """
+    return (x - x_ref) / sigma
+
+
 def is_consistent(new_value: float, data, n_sigma: float = 2.0) -> dict:
     """
     Does `new_value` plausibly come from the same population as `data`?
@@ -165,6 +175,25 @@ def exp_fit(x, y) -> dict:
         sigma_k=res.stderr,
         r2=res.rvalue**2,
     )
+
+
+def quadratic_fit(x, y) -> dict:
+    """
+    Least-squares fit y = A + B x + C x².
+
+    Returns:
+        A    – constant term
+        B    – linear coefficient
+        C    – quadratic coefficient
+        r2   – coefficient of determination R²
+    """
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    coeffs = np.polyfit(x, y, 2)  # returns [C, B, A]
+    C, B, A = coeffs
+    y_pred = np.polyval(coeffs, x)
+    ss_res = ((y - y_pred) ** 2).sum()
+    ss_tot = ((y - y.mean()) ** 2).sum()
+    return dict(A=A, B=B, C=C, r2=1.0 - ss_res / ss_tot)
 
 
 def curve_fit(f: Callable, x, y, p0=None, sigma=None) -> tuple[np.ndarray, np.ndarray]:
@@ -466,6 +495,54 @@ def air_drag_fall(
     return out
 
 
+def oscillation_period(
+    force_func: Callable[[float, float, float], float],
+    mass: float,
+    x0: float,
+    v0: float,
+    t_max: float = 100,
+) -> float:
+    """
+    Period of a (possibly nonlinear) oscillation, found by detecting successive
+    velocity-zero crossings (maxima of x) via solve_ivp events.
+
+    Args:
+        force_func – F(t, x, v): net force [N]
+        mass       – mass [kg]
+        x0, v0     – initial conditions [m], [m/s]
+        t_max      – integration window [s]; increase if fewer than 2 maxima found
+
+    Returns mean period [s] across all detected maxima.
+    """
+
+    def rhs(t, y):
+        x, v = y
+        return [v, force_func(t, x, v) / mass]
+
+    class _MaximaEvent:
+        direction = -1  # v goes + → − at a peak
+        terminal = False
+
+        def __call__(self, t, y):
+            return y[1]
+
+    sol = solve_ivp(
+        rhs,
+        [0, t_max],
+        [x0, v0],
+        events=[_MaximaEvent()],
+        max_step=t_max / 1000,
+        rtol=1e-9,
+        atol=1e-12,
+    )
+    t_events = sol.t_events[0]
+    if len(t_events) < 2:
+        raise ValueError(
+            "Fewer than 2 maxima found; increase t_max or check initial conditions"
+        )
+    return float(np.diff(t_events).mean())
+
+
 # §9  WORK AND ENERGY
 def kinetic_energy(m: float, v: float) -> float:
     """K = ½ m v²"""
@@ -552,6 +629,34 @@ def pendulum_tension(
 def spring_launch_speed(k: float, x: float, m: float) -> float:
     """Speed of a mass launched by a spring compressed by x: v = x √(k/m)."""
     return x * sqrt(k / m)
+
+
+def spring_max_compression(m: float, v: float, k: float) -> float:
+    """
+    Maximum compression when mass m hits a spring at speed v.
+    ½mv² = ½kx²  →  x = v √(m/k).
+    Inverse of spring_launch_speed.
+    """
+    return v * sqrt(m / k)
+
+
+def spring_k_from_drop(m: float, h: float, d: float, g_local: float = g) -> float:
+    """
+    Spring constant when mass m is dropped from height h above a spring and
+    compresses it by distance d.
+    mg(h+d) = ½kd²  →  k = 2mg(h+d)/d².
+    """
+    return 2 * m * g_local * (h + d) / (d * d)
+
+
+def hanging_spring_lowest(m: float, k: float, g_local: float = g) -> float:
+    """
+    Lowest point reached when mass m is attached to a vertical spring (constant k)
+    and released from rest at the spring's natural length.
+    mgh = ½kh²  →  h = 2mg/k.
+    (Equilibrium is at h/2 = mg/k below the natural length.)
+    """
+    return 2 * m * g_local / k
 
 
 # §11  MOMENTUM, COLLISIONS, COM
