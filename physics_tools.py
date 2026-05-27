@@ -519,16 +519,18 @@ def oscillation_period(
         x, v = y
         return [v, force_func(t, x, v) / mass]
 
-    def _maxima(t, y):
-        return y[1]
+    class _MaximaEvent:
+        direction = -1  # v goes + → − at a peak
+        terminal = False
 
-    _maxima.direction = -1  # v goes + → −  (peak)
+        def __call__(self, t, y):
+            return y[1]
 
     sol = solve_ivp(
         rhs,
         [0, t_max],
         [x0, v0],
-        events=[_maxima],
+        events=[_MaximaEvent()],
         max_step=t_max / 1000,
         rtol=1e-9,
         atol=1e-12,
