@@ -71,215 +71,371 @@
   )
 ]
 
-== Formulas with Examples
+== Formula Reference
 
-#align(center)[
-  #table(
-    columns: (auto, 1fr, 1fr),
-    stroke: 0.5pt,
-    inset: 6pt,
-    fill: (x, y) => if y == 0 {
-      gray.lighten(60%)
-    } else if calc.rem(y, 2) == 0 {
-      gray.lighten(90%)
-    } else {
-      none
-    },
-    table.header([*Topic*], [*Formula*], [*Example*]),
+=== Kinematics
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Kinematics —*],
-    [Velocity from accel.],
-    [$v = v_0 + a t$],
-    [$v_0=0, a=2, t=3 => v=6$ m/s],
+#definition(title: [Constant Acceleration])[
+  $
+    v = v_0 + a t
+  $
+  $
+    a = (v - v_0) / t, quad
+    t = (v - v_0) / a, quad
+    v_0 = v - a t
+  $
+]
 
-    [Displacement],
-    [$Delta x = v_0 t + 1/2 a t^2$],
-    [$v_0=0, a=2, t=3 => Delta x=9$ m],
+#definition(title: [Displacement])[
+  $
+    Delta x = v_0 t + 1/2 a t^2
+  $
+  $
+    v_0 = (Delta x - 1/2 a t^2) / t, quad
+    a = 2(Delta x - v_0 t) / t^2, quad
+    t = (-v_0 + sqrt(v_0^2 + 2 a Delta x)) / a
+  $
+]
 
-    [Velocity from dist.],
-    [$v^2 = v_0^2 + 2 a Delta x$],
-    [$v_0=0, a=2, Delta x=9 => v=6$ m/s],
+#definition(title: [Velocity–Distance])[
+  $
+    v^2 = v_0^2 + 2 a Delta x
+  $
+  $
+    a = (v^2 - v_0^2) / (2 Delta x), quad
+    Delta x = (v^2 - v_0^2) / (2 a), quad
+    v_0 = sqrt(v^2 - 2 a Delta x)
+  $
+]
 
-    [Free fall height],
-    [$h = 1/2 g t^2$],
-    [$t=2 => h = 1/2 dot 9.82 dot 4 = 19.6$ m],
+#definition(title: [Free Fall])[
+  $
+    y(t) = y_0 + v_0 t - 1/2 g t^2, quad v(t) = v_0 - g t
+  $
+  $
+    t_"top" = v_0 / g, quad
+    h_"max" = v_0^2 / (2 g), quad
+    t_"air" = 2 v_0 / g
+  $
+]
 
-    [Time to peak],
-    [$t_"top" = v_0 / g$],
-    [$v_0 = 20 => t_"top" = 2.04$ s],
+=== Projectile Motion
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Energy —*],
-    [Kinetic energy],
-    [$K = 1/2 m v^2$],
-    [$m=2, v=3 => K=9$ J],
+#definition(title: [Trajectory])[
+  $
+    x(t) = v_0 cos theta dot t, quad
+    y(t) = y_0 + v_0 sin theta dot t - 1/2 g t^2
+  $
+  $
+    v_x = v_0 cos theta quad #text("(constant)"), quad
+    v_y(t) = v_0 sin theta - g t
+  $
+]
 
-    [Gravitational PE],
-    [$U = m g h$],
-    [$m=2, h=5 => U=98.2$ J],
+#definition(title: [Range, Height, Time of Flight (same launch/land height)])[
+  $
+    R = v_0^2 sin(2 theta) / g, quad
+    h_"max" = v_0^2 sin^2 theta / (2 g), quad
+    T = 2 v_0 sin theta / g
+  $
+  $
+    v_0 = sqrt(R g / sin(2 theta)), quad
+    theta = 1/2 arcsin(R g / v_0^2), quad
+    g = v_0^2 sin(2 theta) / R
+  $
+]
 
-    [Spring PE],
-    [$U = 1/2 k x^2$],
-    [$k=200, x=0.1 => U=1$ J],
+#definition(title: [Speed at Any Height])[
+  $
+    v^2 = v_0^2 - 2 g (y - y_0)
+  $
+  $
+    y - y_0 = (v_0^2 - v^2) / (2 g), quad
+    v = sqrt(v_0^2 - 2 g (y - y_0))
+  $
+]
 
-    [Work–energy thm.],
-    [$W_"net" = Delta K$],
-    [$W=18 "J", v_0=0 => v=sqrt(2 dot 18 slash m)$],
+=== Energy
 
-    [Conservation (no friction)],
-    [$K_1 + U_1 = K_2 + U_2$],
-    [Drop $h=5$: $v=sqrt(2 g h)=9.9$ m/s],
+#definition(title: [Kinetic Energy])[
+  $
+    K = 1/2 m v^2
+  $
+  $
+    m = 2 K / v^2, quad v = sqrt(2 K / m)
+  $
+]
 
-    [Power],
-    [$P = F v$],
-    [$F=100, v=5 => P=500$ W],
+#definition(title: [Gravitational Potential Energy])[
+  $
+    U_"grav" = m g h
+  $
+  $
+    m = U / (g h), quad g = U / (m h), quad h = U / (m g)
+  $
+]
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Forces & Friction —*],
-    [Newton's 2nd law],
-    [$F = m a$],
-    [$m=5, a=3 => F=15$ N],
+#definition(title: [Spring Potential Energy])[
+  $
+    U_"spring" = 1/2 k x^2
+  $
+  $
+    k = 2 U / x^2, quad x = sqrt(2 U / k)
+  $
+]
 
-    [Normal on flat surface],
-    [$n = m g$],
-    [$m=10 => n=98.2$ N],
+#definition(title: [Work–Energy Theorem])[
+  $
+    W_"net" = Delta K = K_f - K_i
+  $
+  $
+    K_f = K_i + W_"net", quad K_i = K_f - W_"net"
+  $
+]
 
-    [Kinetic friction],
-    [$f_k = mu_k n$],
-    [$mu_k=0.3, n=98.2 => f_k=29.5$ N],
+#definition(title: [Conservation of Energy])[
+  $
+    K_1 + U_1 + W_"nc" = K_2 + U_2
+  $
+  $W_"nc"$ = work by non-conservative forces (friction $< 0$, engine $> 0$).
 
-    [Incline: along-plane gravity],
-    [$F_parallel = m g sin theta$],
-    [$m=5, theta=30° => F=24.5$ N],
+  Frictionless drop from rest: $v = sqrt(2 g h)$, $quad h = v^2 / (2 g)$.
+]
 
-    [Incline: normal force],
-    [$n = m g cos theta$],
-    [$m=5, theta=30° => n=42.5$ N],
+#definition(title: [Power])[
+  $
+    P = (dd(W)) / (dd(t)) = va(F) dot va(v) = F v cos theta
+  $
+  $
+    F = P / (v cos theta), quad v = P / (F cos theta), quad t = W / P
+  $
+]
 
-    [Incline: slides if],
-    [$tan theta > mu_s$],
-    [$theta=35°, mu_s=0.6: tan 35°=0.70>0.6 =>$ slides],
+=== Forces
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Momentum & Collisions —*],
-    [Momentum],
-    [$p = m v$],
-    [$m=3, v=4 => p=12$ kg·m/s],
+#definition(title: [Newton's Second Law])[
+  $
+    sum va(F) = m va(a)
+  $
+  $
+    a = F_"net" / m, quad m = F_"net" / a
+  $
+]
 
-    [Impulse],
-    [$Delta p = F Delta t$],
-    [$F=50, Delta t=0.1 => Delta p=5$ N·s],
+#definition(title: [Weight])[
+  $
+    W = m g
+  $
+  $
+    m = W / g, quad g = W / m
+  $
+]
 
-    [Perfectly inelastic],
-    [$v_f = (m_1 v_1 + m_2 v_2)/(m_1+m_2)$],
-    [$m_1=m_2, v_2=0 => v_f = v_1/2$],
+#definition(title: [Friction])[
+  $
+    f_k = mu_k n quad #text("(kinetic)"), quad f_s <= mu_s n quad #text("(static)")
+  $
+  $
+    mu_k = f_k / n, quad n = f_k / mu_k
+  $
+  Normal force: flat surface $n = m g$; incline $n = m g cos theta$.
+]
 
-    [Explosion from rest],
-    [$m_1 v_1 + m_2 v_2 = 0$],
-    [$m_1=2, m_2=6, v_2=1 => v_1=-3$ m/s],
+#definition(title: [Inclined Plane])[
+  $
+    F_parallel = m g sin theta, quad n = m g cos theta
+  $
+  $
+    theta = arcsin(F_parallel / (m g)), quad m = F_parallel / (g sin theta)
+  $
+  Slides if $tan theta > mu_s$. Sliding acceleration: $a = g(sin theta - mu_k cos theta)$.
+]
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Rotation —*],
-    [Torque],
-    [$tau = r F sin theta$],
-    [$r=0.5, F=20, theta=90° => tau=10$ N·m],
+=== Circular Motion
 
-    [Rotational N2],
-    [$tau = I alpha$],
-    [$tau=10, I=2 => alpha=5$ rad/s²],
+#definition(title: [Centripetal Acceleration])[
+  $
+    a_c = v^2 / r = omega^2 r
+  $
+  $
+    r = v^2 / a_c = a_c / omega^2, quad
+    v = sqrt(a_c r), quad
+    omega = sqrt(a_c / r)
+  $
+]
 
-    [Rolling condition],
-    [$v_"cm" = omega r$],
-    [$omega=10, r=0.1 => v_"cm"=1$ m/s],
+#definition(title: [Centripetal Force])[
+  $
+    F_c = m v^2 / r = m omega^2 r
+  $
+  $
+    m = F_c r / v^2, quad r = m v^2 / F_c, quad v = sqrt(F_c r / m)
+  $
+]
 
-    [Angular momentum cons.],
-    [$I_1 omega_1 = I_2 omega_2$],
-    [$I_1=2, omega_1=5, I_2=4 => omega_2=2.5$ rad/s],
+#definition(title: [Angular Velocity])[
+  $
+    omega = 2 pi f = (2 pi) / T = "rpm" times 2 pi / 60
+  $
+  $
+    f = omega / (2 pi), quad T = (2 pi) / omega
+  $
+]
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Projectile Motion —*],
-    [Horizontal position],
-    [$x(t) = v_0 cos theta dot t$],
-    [$v_0=20, theta=30°, t=2 => x=34.6$ m],
+=== Pendulum & Springs
 
-    [Vertical position],
-    [$y(t) = v_0 sin theta dot t - 1/2 g t^2$],
-    [$v_0=20, theta=30°, t=1 => y=5.1$ m],
+#definition(title: [Pendulum Height])[
+  $
+    h = R (1 - cos theta)
+  $
+  $
+    theta = arccos(1 - h/R), quad R = h / (1 - cos theta)
+  $
+]
 
-    [Range (same height)],
-    [$R = v_0^2 sin(2 theta) / g$],
-    [$v_0=20, theta=45° => R=40.8$ m],
+#definition(title: [Pendulum Speed at Angle])[
+  $
+    v^2 = v_0^2 - 2 g R (1 - cos theta)
+  $
+  $
+    v_0 = sqrt(v^2 + 2 g R (1 - cos theta)), quad
+    R = (v_0^2 - v^2) / (2 g (1 - cos theta))
+  $
+]
 
-    [Max height (same height)],
-    [$h_max = v_0^2 sin^2 theta / (2 g)$],
-    [$v_0=20, theta=30° => h_max=5.1$ m],
+#definition(title: [Pendulum String Tension])[
+  $
+    T = m v^2 / R + m g cos theta
+  $
+  $
+    v = sqrt((T - m g cos theta) R / m), quad
+    R = m v^2 / (T - m g cos theta)
+  $
+]
 
-    [Time of flight],
-    [$T = 2 v_0 sin theta / g$],
-    [$v_0=20, theta=30° => T=2.04$ s],
+#definition(title: [Loop-the-Loop])[
+  Min speed at top (normal force $= 0$): $v_"top" = sqrt(g R)$
 
-    [Speed at any height],
-    [$v^2 = v_0^2 - 2 g (y - y_0)$],
-    [$v_0=20, Delta y=5 => v=17.4$ m/s],
+  Min launch height from rest: $h_"min" = 5 R / 2$
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Circular Motion —*],
-    [Centripetal accel.],
-    [$a_c = v^2 / r = omega^2 r$],
-    [$v=10, r=2 => a_c=50$ m/s²],
+  $
+    R = v_"top"^2 / g = 2 h_"min" / 5
+  $
+]
 
-    [Angular velocity],
-    [$omega = 2 pi / T = 2 pi f$],
-    [$T=0.5 => omega=12.6$ rad/s],
+#definition(title: [Spring Launch])[
+  $
+    1/2 k x^2 = 1/2 m v^2 quad => quad v = x sqrt(k / m)
+  $
+  $
+    x = v sqrt(m / k), quad k = m v^2 / x^2, quad m = k x^2 / v^2
+  $
+]
 
-    [rpm to rad/s],
-    [$omega = "rpm" times 2 pi / 60$],
-    [$1000 "rpm" => omega=104.7$ rad/s],
+=== Momentum & Collisions
 
-    [Centripetal force],
-    [$F_c = m v^2 / r$],
-    [$m=2, v=10, r=2 => F_c=100$ N],
+#definition(title: [Momentum])[
+  $
+    va(p) = m va(v)
+  $
+  $
+    m = p / v, quad v = p / m
+  $
+  Conservation (closed system): $sum va(p)_i = sum va(p)_f$.
+]
 
-    [Banked curve (no friction)],
-    [$tan theta = v^2 / (g r)$],
-    [$v=20, r=100 => theta=22°$],
+#definition(title: [Impulse])[
+  $
+    Delta va(p) = va(F) Delta t
+  $
+  $
+    va(F) = Delta va(p) / Delta t, quad Delta t = Delta va(p) / va(F)
+  $
+]
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Pendulum & Springs —*],
-    [Pendulum height risen],
-    [$h = R(1 - cos theta)$],
-    [$R=1, theta=60° => h=0.5$ m],
+#definition(title: [Perfectly Inelastic Collision])[
+  $
+    v_f = (m_1 v_1 + m_2 v_2) / (m_1 + m_2)
+  $
+  $
+    m_1 = m_2 (v_f - v_2) / (v_1 - v_f), quad
+    v_1 = ((m_1 + m_2) v_f - m_2 v_2) / m_1
+  $
+]
 
-    [Pendulum speed at angle],
-    [$v^2 = v_0^2 - 2 g R(1 - cos theta)$],
-    [$v_0=4, R=1, theta=90° => v=2.2$ m/s],
+#definition(title: [Elastic Collision (1D)])[
+  $
+    v_(1f) = ((m_1 - m_2) v_(1i) + 2 m_2 v_(2i)) / (m_1 + m_2)
+  $
+  $
+    v_(2f) = ((m_2 - m_1) v_(2i) + 2 m_1 v_(1i)) / (m_1 + m_2)
+  $
+  Special case $v_(2i) = 0$, equal masses: $v_(1f) = 0$, $v_(2f) = v_(1i)$.
+]
 
-    [Pendulum string tension],
-    [$T = m v^2/R + m g cos theta$],
-    [$m=1, v=4, R=1, theta=0° => T=25.6$ N],
+#definition(title: [Explosion from Rest])[
+  $
+    0 = m_1 v_1 + m_2 v_2 quad => quad v_1 = -(m_2 / m_1) v_2
+  $
+  $
+    m_1 / m_2 = -v_2 / v_1, quad v_2 = -(m_1 / m_2) v_1
+  $
+]
 
-    [Min speed at loop top],
-    [$v_"top" = sqrt(g R)$],
-    [$R=2 => v_"top"=4.43$ m/s],
+=== Rotation
 
-    [Min height for loop],
-    [$h_"min" = 5R/2$],
-    [$R=2 => h_"min"=5$ m],
+#definition(title: [Torque])[
+  $
+    tau = r F sin theta
+  $
+  $
+    F = tau / (r sin theta), quad r = tau / (F sin theta), quad theta = arcsin(tau / (r F))
+  $
+]
 
-    [Spring launch speed],
-    [$v = x sqrt(k / m)$],
-    [$k=500, x=0.1, m=0.5 => v=3.16$ m/s],
+#definition(title: [Rotational Newton's Second Law])[
+  $
+    sum tau_"net" = I alpha
+  $
+  $
+    alpha = tau_"net" / I, quad I = tau_"net" / alpha
+  $
+]
 
-    table.cell(colspan: 3, fill: gray.lighten(75%))[*— Error Propagation —*],
-    [Sum/difference],
-    [$sigma_f = sqrt(sigma_a^2 + sigma_b^2)$],
-    [$sigma_a=0.1, sigma_b=0.1 => sigma_f=0.141$],
+#definition(title: [Angular Momentum])[
+  $
+    L = I omega
+  $
+  Conservation when $sum tau_"ext" = 0$:
+  $
+    I_1 omega_1 = I_2 omega_2 quad => quad omega_2 = I_1 omega_1 / I_2
+  $
+]
 
-    [Product/quotient (relative)],
-    [$(sigma_f/f)^2 = (sigma_a/a)^2 + (sigma_b/b)^2$],
-    [$a=10 plus.minus 0.2, b=5 plus.minus 0.1 => sigma_f/f=2.83%$],
+#definition(title: [Rolling Without Slipping])[
+  $
+    v_"cm" = omega r
+  $
+  $
+    omega = v_"cm" / r, quad r = v_"cm" / omega
+  $
+  $
+    K_"total" = 1/2 m v_"cm"^2 + 1/2 I_"cm" omega^2 = 1/2 m v_"cm"^2 (1 + I_"cm" / (m r^2))
+  $
+]
 
-    [Power rule],
-    [$sigma_f / f = abs(n) sigma_a / a$],
-    [$f=a^3, sigma_a/a=1% => sigma_f/f=3%$],
+=== Error Propagation
 
-    [General (Gaussian)],
-    [$sigma_f = sqrt(sum_i (pdv(f,x_i) sigma_i)^2)$],
-    [Compute each $|partial f/partial x_i| sigma_i$, add in quadrature],
-  )
+#definition(title: [Gaussian Error Propagation])[
+  $
+    sigma_f = sqrt(sum_i (pdv(f, x_i) dot sigma_i)^2)
+  $
+
+  Sum/difference: $quad sigma_f = sqrt(sigma_a^2 + sigma_b^2)$
+
+  Product/quotient: $quad (sigma_f / f)^2 = (sigma_a / a)^2 + (sigma_b / b)^2$
+
+  Power: $quad sigma_f / f = abs(n) sigma_a / a$
 ]
 
 #pagebreak()
