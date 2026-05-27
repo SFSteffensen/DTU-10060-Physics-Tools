@@ -535,7 +535,9 @@ def oscillation_period(
     )
     t_events = sol.t_events[0]
     if len(t_events) < 2:
-        raise ValueError("Fewer than 2 maxima found; increase t_max or check initial conditions")
+        raise ValueError(
+            "Fewer than 2 maxima found; increase t_max or check initial conditions"
+        )
     return float(np.diff(t_events).mean())
 
 
