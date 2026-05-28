@@ -788,13 +788,18 @@ def damped_driven_sho(
             atol=1e-12,
         )
         return dict(
-            omega0=omega0, zeta=zeta, omega_d=omega_d,
-            t=sol.t, x=sol.y[0], v=sol.y[1],
+            omega0=omega0,
+            zeta=zeta,
+            omega_d=omega_d,
+            t=sol.t,
+            x=sol.y[0],
+            v=sol.y[1],
         )
 
     omegas = np.asarray(omegas, float)
     amps = np.empty_like(omegas)
     for i, w in enumerate(omegas):
+
         def rhs(t, y, w=w):
             x, v = y
             return [v, (F0 * sin(w * t) - damping_b * v - spring_k * x) / mass]
@@ -814,8 +819,11 @@ def damped_driven_sho(
         x_ss = sol.y[0][mask]
         amps[i] = 0.5 * (x_ss.max() - x_ss.min())
     return dict(
-        omega0=omega0, zeta=zeta, omega_d=omega_d,
-        omegas=omegas, amplitude=amps,
+        omega0=omega0,
+        zeta=zeta,
+        omega_d=omega_d,
+        omegas=omegas,
+        amplitude=amps,
     )
 
 
@@ -990,9 +998,7 @@ def inelastic_1d(m1: float, v1i: float, m2: float, v2i: float) -> dict:
     return dict(vf=vf, Ki=Ki, Kf=Kf, energy_lost=Ki - Kf)
 
 
-def collision_2d(
-    m1: float, v1i, m2: float, v2i, v1f
-) -> dict:
+def collision_2d(m1: float, v1i, m2: float, v2i, v1f) -> dict:
     """
     2D collision via momentum conservation (per component).
 
@@ -1026,8 +1032,12 @@ def collision_2d(
     else:
         angle_deg = float("nan")
     return dict(
-        v2f=v2f, Ki=Ki, Kf=Kf, energy_lost=Ki - Kf,
-        angle_deg=angle_deg, is_elastic=abs(Ki - Kf) < 1e-6 * max(Ki, 1.0),
+        v2f=v2f,
+        Ki=Ki,
+        Kf=Kf,
+        energy_lost=Ki - Kf,
+        angle_deg=angle_deg,
+        is_elastic=abs(Ki - Kf) < 1e-6 * max(Ki, 1.0),
     )
 
 
