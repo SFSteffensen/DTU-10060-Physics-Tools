@@ -68,6 +68,26 @@
     [$L = I omega$ (conserved when $tau_("ext") = 0$)],
     [Rolling without slipping],
     [$v_("cm") = omega r$],
+    [Standard score],
+    [$z = (x - x_("ref"))/sigma$; $|z|<2$ ok, $>3$ reject],
+    [Error propagation],
+    [$sigma_f^2 = sum (pdv(f, x_i))^2 sigma_i^2$],
+    [Linear regression slope],
+    [$B = (N sum x y - sum x sum y)/(N sum x^2 - (sum x)^2)$],
+    [Stokes / quadratic drag],
+    [$F = 6 pi r eta v$; $quad F = 1/2 rho C_D A v^2$],
+    [Terminal velocity],
+    [linear: $v_t = m g/b$; quad: $v_t = sqrt(m g / D)$],
+    [SHO natural freq.],
+    [$omega_0 = sqrt(k/m)$, $quad T = 2 pi sqrt(m/k)$],
+    [Conical pendulum],
+    [$T = 2 pi sqrt(L cos theta / g)$],
+    [Banked curve],
+    [$tan theta = v^2 / (g r)$],
+    [Steiner / parallel axis],
+    [$I = I_("cm") + m d^2$],
+    [Vector torque / $L$],
+    [$va(tau) = va(r) times va(F)$, $va(L) = va(r) times va(p)$],
   )
 ]
 
@@ -476,6 +496,87 @@ Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
   ]
 ]
 
+== Dependent vs Independent Uncertainties
+
+#important[
+  *Always check whether errors are correlated.*
+
+  *Independent (add in quadrature):*
+  - Sum/difference: $sigma_(x plus.minus y) = sqrt(sigma_x^2 + sigma_y^2)$
+  - Product/quotient: $(sigma_f / f)^2 = (sigma_x / x)^2 + (sigma_y / y)^2$
+
+  *Dependent (linear add, worst case):*
+  - Sum/difference: $sigma_(x plus.minus y) = sigma_x + sigma_y$
+  - Product/quotient: $sigma_f / f = sigma_x / x + sigma_y / y$
+
+  *Combined random + systematic:* $sigma_x = sqrt(sigma_("rnd")^2 + sigma_("sys")^2)$.
+]
+
+== Rounding the Uncertainty
+
+#note-box()[
+  *Rule:* Round $sigma_x$ to *1 significant digit*. If leading digit is *1, 2, or 3*, keep *2 digits* (so the rounding error itself stays under ~10%). The value $x$ uses the same final decimal place as $sigma_x$.
+
+  - $sigma = 0.44566 -> 0.4$ (rounding error 11%)
+  - $sigma = 0.14327 -> 0.14$ (keep 2 digits — first digit is 1)
+  - $L = 10.0 plus.minus 0.5$ m ✓ (matched decimal places)
+]
+
+== Standard Score (Hypothesis Testing)
+
+#important[
+  *Test a measurement against a reference value:*
+  $
+    z = (x - x_("ref")) / sigma_x
+  $
+
+  *Compare two independent measurements:*
+  $
+    z = (x - y) / sqrt(sigma_x^2 + sigma_y^2)
+  $
+
+  *Interpretation:*
+  - $abs(z) < 2$: consistent (good).
+  - $2 <= abs(z) < 3$: grey zone.
+  - $abs(z) >= 3$: reject hypothesis.
+]
+
+== Distributions and Coverage
+
+#note-box()[
+  *Normal:* $P(mu plus.minus sigma) = 0.68$, $P(mu plus.minus 2 sigma) = 0.95$, $P(mu plus.minus 3 sigma) = 0.99$.
+
+  *Rectangular* (uniform, e.g. digital readout, width $w$): $sigma = w / sqrt(12)$.
+  $P(mu plus.minus 1.65 sigma) = 0.95$.
+
+  *Triangular* (e.g. analog readout, width $w$): $sigma = w / sqrt(24)$.
+  $P(mu plus.minus 1.81 sigma) = 0.95$.
+
+  *Rule of thumb for instrument resolution:* digital $-> w/sqrt(12)$, analog $-> w/sqrt(24)$.
+]
+
+== Linear Regression (Least-Squares)
+
+#definition(title: [$y = A + B x$ (with $x$ exact, $y$ uncertain, equal $sigma_y$)])[
+  $
+    B = (N sum x y - sum x sum y) / (N sum x^2 - (sum x)^2), quad
+    A = (sum x^2 sum y - sum x sum x y) / (N sum x^2 - (sum x)^2)
+  $
+
+  Residual standard deviation (DOF $= N - 2$):
+  $
+    sigma_y = sqrt(1/(N-2) sum_i (y_i - A - B x_i)^2)
+  $
+
+  Uncertainties on slope/intercept:
+  $
+    sigma_B = sigma_y sqrt(N / (N sum x^2 - (sum x)^2)), quad
+    sigma_A = sigma_y sqrt(sum x^2 / (N sum x^2 - (sum x)^2))
+  $
+
+  *In Python:* `np.polyfit(x, y, 1, cov=True)` returns $(B, A)$ and covariance matrix.
+]
+
 == Power-law fit
 
 #important[
@@ -558,6 +659,54 @@ $
   + Combine in quadrature: $sigma_f = sqrt(sum_i (pdv(f, x_i) dot sigma_i)^2)$.
 
   *Identifying the dominant term:* compare the individual contributions $abs(pdv(f, x_i)) dot sigma_i$ before squaring — the largest one dominates $sigma_f$.
+]
+
+=== Dimensional Analysis & Natural Scales
+
+#important[
+  Given a model $y = f(x_1, x_2, ..., x_n)$ with dimensions $["m" "kg" "s"]$ (M, L, T), find a *characteristic scale* — a combination of the $x_i$ with the right dimensions.
+
+  *Strategy:* Write the unknown scale as $mu = x_1^A x_2^B x_3^C dots$. Demand the product has the desired dimension. This gives 3 linear equations (one per M, L, T) in $n$ unknowns. If $n > 3$, choose one exponent freely.
+
+  *Dimensional matrix* (rows = M, L, T; cols = variables): exponents directly give the equations.
+
+  *Why this matters:* once $mu, lambda, tau$ are known, the model reduces to a *dimensionless* relation $y/("scale") = F("dimensionless ratios")$, which has fewer parameters and is easier to fit.
+]
+
+#note-box()[
+  *Common natural scales:*
+  - Mass: $mu = m$
+  - Length: $lambda = l$ (any given length), $lambda = v^2 / g$, $lambda = m g / k$ (spring)
+  - Time: $tau = sqrt(l / g)$, $tau = l / v$, $tau = sqrt(m / k)$, $tau = m / b$ (drag)
+  - Acceleration: $alpha = lambda / tau^2 = g$ (when $tau = sqrt(l/g)$)
+]
+
+#example(title: [E24 Q6: Pick natural scales for $a = f(m, v, L, g, F)$])[
+  Length scales (need L): $lambda = L$ ✓, $lambda = v^2 / g$ ✓ (both have dim L).
+  Time scale: $tau = L / v$ ✓ (has dim T). Reject $L/g$ (dim $sqrt("T")$, wrong).
+
+  *General rule:* before checking options, write out the dimensions of each candidate. Only those equal to L can be $lambda$, only those equal to T can be $tau$.
+]
+
+#example(title: [Worked example — falling object with linear drag $F_d = k v$])[
+  Variables: $m, g, h, k$ with dimensions $["M","L"/"T"^2,"L","M"/"T"]$. The dimension matrix:
+  $
+    mat(
+      , m, g, h, k;
+      "M:", 1, 0, 0, 1;
+      "L:", 0, 1, 1, 0;
+      "T:", 0, -2, 0, -1
+    )
+  $
+
+  *Find $tau$* (set product = T): $A + D = 0$, $B + C = 0$, $-2 B - D = 1$.
+  Three equations, four unknowns — choose $C = 0 -> B = 0 -> D = -1 -> A = 1$. So $tau = m/k$ ✓ (matches drag time constant).
+
+  *Find $lambda$*: $A + D = 0$, $B + C = 1$, $-2 B - D = 0$. Choose $C = 1$: $lambda = h$. ✓
+
+  *Find $mu$*: $A + D = 1$, $B + C = 0$, $-2 B - D = 0$. Choose $C = 0$: $mu = m$. ✓
+
+  Dimensionless equation: $t / tau = F(h/lambda, m/mu, ...)$.
 ]
 
 #example(title: [Manual propagation for $t = (v_0 + sqrt(v_0^2 + 2 g h))/g$])[
@@ -709,6 +858,30 @@ $
   Negative part from $6$ to $8$ s: $A = 1/2 dot 2 dot (-5) = -5$ m.
 ]
 
+== Variable Acceleration (Integration Approach)
+
+#important[
+  When $a$ is *not* constant, you can't use $v = v_0 + a t$. Three cases by how $a$ depends on its argument:
+
+  *Case 1 — $a(t)$ given:* direct integration.
+  $
+    v(t) = v_0 + integral_0^t a(t') dd(t'), quad x(t) = x_0 + integral_0^t v(t') dd(t')
+  $
+
+  *Case 2 — $a(v)$ given:* separate variables.
+  $
+    (dd(v))/(dd(t)) = a(v) ==> integral_(v_0)^v (dd(v'))/(a(v')) = t
+  $
+  Then invert for $v(t)$.
+
+  *Case 3 — $a(x)$ given:* use the chain trick $a = v (dd(v))/(dd(x))$.
+  $
+    v^2(x) = v_0^2 + 2 integral_(x_0)^x a(x') dd(x')
+  $
+
+  *Sanity check:* $a$ constant $-> v^2 = v_0^2 + 2 a (x - x_0)$. ✓
+]
+
 == Braking Distance (car collision type)
 
 #note-box(
@@ -843,6 +1016,23 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
     $r = a_c / omega^2 = 8500 dot 9.82 / 1047^2 = 0.076$ m $= 7.6$ cm. *Answer: C*.
   ]
+]
+
+== Polar Decomposition of Acceleration
+
+#definition(title: [Tangential and radial components])[
+  For motion on a curve with radius of curvature $r$ at the current point:
+  $
+    a_t = (dd(v))/(dd(t)) = r alpha quad #text("(changes speed)")
+  $
+  $
+    a_c = v^2 / r = omega^2 r = v omega quad #text("(changes direction, points inward)")
+  $
+  Total: $a = sqrt(a_t^2 + a_c^2)$.
+
+  *Polar unit vectors:* $hat(r) = (cos theta, sin theta)$, $hat(t) = (-sin theta, cos theta)$.
+
+  *Constant speed circle:* $a_t = 0$, only $a_c$ remains.
 ]
 
 == Vertical and Horizontal Components of Acceleration (qualitative)
@@ -1047,6 +1237,31 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 #important[
   *N3 trap:* Action-reaction pairs act on *different* objects. They *never cancel* each other in the same FBD.
+]
+
+== Five Important Forces in Mechanics
+
+#note-box()[
+  Every FBD in this course is built from these five force types:
+
+  + *Gravity (weight):* $va(F)_g = m va(g)$, always downward (magnitude $m g$).
+  + *Normal force* $va(n)$: perpendicular to and *away from* a contact surface. Magnitude is *whatever it takes* to enforce no penetration (find from N2 perpendicular).
+  + *Tension* $va(T)$: along the rope, pulling. Same magnitude at both ends for ideal (massless) rope + pulley.
+  + *Friction:* parallel to contact surface; static $f_s <= mu_s n$, kinetic $f_k = mu_k n$.
+  + *Spring* (Hooke): $va(F)_("spring") = -k (x - x_0)$, restoring toward equilibrium.
+
+  *No such thing as a "net force" or "$m a$" arrow on a FBD.* These are results, not forces.
+]
+
+== Inertial Frames & Fictitious Forces
+
+#important[
+  Newton's laws hold *only in inertial frames* (non-accelerating). In a non-inertial frame (e.g. accelerating car, rotating turntable) you must add *fictitious forces*:
+
+  - Linear acceleration $va(a)_("frame")$ of frame: add $-m va(a)_("frame")$ to every body.
+  - Rotating frame (angular speed $omega$): add *centrifugal* $m omega^2 va(r)$ (outward) and *Coriolis* $-2 m va(omega) times va(v)_("rel")$.
+
+  *Exam tip:* always solve from an *inertial frame* (ground). Treat the rotating bucket / turning car as objects with real centripetal acceleration, not as a frame where "centrifugal force" exists.
 ]
 
 == Free Body Diagram (FBD) — the ONLY important step
@@ -1437,6 +1652,28 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   ]
 ]
 
+== Banked Curve
+
+#definition(title: [Frictionless banked turn])[
+  Car of speed $v$ on curve of radius $r$, banked at angle $theta$ from horizontal. Only normal force provides centripetal acceleration:
+  $
+    tan theta = v^2 / (g r)
+  $
+  Equivalently $v_("design") = sqrt(g r tan theta)$. Below this speed the car slides down; above, it slides up (without friction).
+
+  *With friction:* min and max speeds bracket the design speed by $tan(theta plus.minus phi)$ where $tan phi = mu_s$.
+]
+
+== Atwood with Massive Pulley
+
+#math-hint()[
+  When the pulley has moment of inertia $I_p$ and radius $R$, tensions on the two sides are *unequal*:
+  $
+    a = ((m_1 - m_2) g) / (m_1 + m_2 + I_p / R^2)
+  $
+  For solid disk pulley: $I_p / R^2 = M_p / 2$. *Sanity check:* massless pulley ($I_p = 0$) gives the standard $a = (m_1 - m_2) g / (m_1 + m_2)$. ✓
+]
+
 == Tension in Pendulum at Angle $theta$
 
 // TODO: Draw a vertically hanging pendulum (mass m at end of string of length R), then the same pendulum at angle theta from vertical, with vectors for gravity, tension T, and an arrow for v at the bottom.
@@ -1469,6 +1706,33 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   ]
 ]
 
+== Conical Pendulum
+
+#definition(title: [Mass on string sweeping a horizontal circle])[
+  String of length $L$ makes angle $theta$ with vertical; mass traces a horizontal circle of radius $r = L sin theta$ at angular speed $omega$.
+
+  N2 vertical: $T cos theta = m g$.
+  N2 horizontal (radial): $T sin theta = m omega^2 r = m omega^2 L sin theta$.
+
+  Divide:
+  $
+    omega^2 = g / (L cos theta), quad T_("period") = 2 pi sqrt((L cos theta) / g)
+  $
+
+  *Limit check:* $theta -> 0$: $T_("period") -> 2 pi sqrt(L/g)$ (small-angle simple pendulum). ✓
+]
+
+== Physical Pendulum (Small Angle)
+
+#definition(title: [Rigid body pivoting at distance $d$ from COM])[
+  $
+    T = 2 pi sqrt(I / (m g d))
+  $
+  $I$ = moment of inertia about the *pivot* (use Steiner if needed). $d$ = distance from pivot to COM.
+
+  *Simple pendulum recovery:* point mass on string, $I = m L^2$, $d = L$ $-> T = 2 pi sqrt(L/g)$. ✓
+]
+
 == Friction from Deceleration
 
 #math-hint(
@@ -1489,6 +1753,33 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 #pagebreak()
 
 = Equation of Motion (ODE-integration)
+
+== Drag Forces — Two Regimes
+
+#definition(title: [Linear (Stokes) drag])[
+  Small/slow objects in viscous fluid. For a sphere of radius $r$ in fluid of viscosity $eta$:
+  $
+    F_d = 6 pi r eta v = b v
+  $
+  Linear in $v$. *Terminal velocity:* set $m g = b v_t -> v_t = m g / b$.
+  Time constant $tau = m / b$.
+]
+
+#definition(title: [Quadratic (form) drag])[
+  Larger/faster objects in air or water:
+  $
+    F_d = D v^2 quad #text("where") quad D = 1/2 rho C_D A
+  $
+  $rho$: fluid density. $C_D$: drag coefficient ($approx 0.5$ for a sphere, $approx 1$ for a flat plate, $approx 0.04$ for streamlined). $A$: cross-sectional area.
+
+  *Terminal velocity:* $m g = D v_t^2 -> v_t = sqrt(m g / D)$.
+
+  *Scaling:* doubling the mass increases $v_t$ by $sqrt(2)$ (assuming same $D$).
+]
+
+#math-hint()[
+  *Identify the regime by Reynolds number $"Re" = rho v L / eta$:* $"Re" lt.tilde 1$: Stokes (linear); $"Re" >> 1$: quadratic. For human-scale objects in air, always quadratic.
+]
 
 == Linear Air Resistance
 
@@ -1530,6 +1821,59 @@ $
       return [v, a]
   sol = solve_ivp(rhs, [0, t_max], [x0, v0], t_eval=...)
   ```
+]
+
+== Euler Methods (Recursive Stepping)
+
+#definition(title: [Euler vs Euler-Cromer])[
+  Given $dot(x) = v$, $dot(v) = a(t, x, v)$ and step $Delta t$:
+
+  *Forward Euler* (unstable for oscillators, drifts energy upward):
+  $
+    v_(n+1) = v_n + a_n Delta t, quad x_(n+1) = x_n + v_n Delta t
+  $
+
+  *Euler–Cromer (symplectic)* — update $v$ first, then use new $v$ for $x$:
+  $
+    v_(n+1) = v_n + a_n Delta t, quad x_(n+1) = x_n + v_(n+1) Delta t
+  $
+  Conserves energy on average — *use for oscillators and orbits*.
+]
+
+== `solve_ivp` Events
+
+#note-box()[
+  *Stop simulation at a condition* (e.g. projectile hits ground):
+  ```python
+  def hit_ground(t, y):
+      return y[0]            # zero-crossing of x[0]
+  hit_ground.terminal = True   # stop on first hit
+  hit_ground.direction = -1    # only downward crossings
+  sol = solve_ivp(rhs, ..., events=hit_ground)
+  t_hit = sol.t_events[0][0]
+  ```
+  - `terminal = True`: stop integration on first event.
+  - `direction = +1` / `-1`: only catch upward/downward crossings.
+  - `direction = 0` (default): all crossings.
+]
+
+== Damped & Driven Harmonic Oscillator
+
+#definition(title: [Spring with damping and forcing])[
+  $
+    m dot.double(x) + b dot(x) + k x = F_0 sin(omega t)
+  $
+
+  *Natural frequency:* $omega_0 = sqrt(k / m)$, period $T_0 = 2 pi / omega_0$.
+
+  *Damping ratio:* $zeta = b / (2 sqrt(m k))$.
+  - $zeta < 1$: underdamped (oscillates with decay).
+  - $zeta = 1$: critical.
+  - $zeta > 1$: overdamped (no oscillation).
+
+  *Free undamped solution:* $x(t) = A cos(omega_0 t + phi)$, with $A, phi$ from initial conditions.
+
+  *Resonance:* steady-state amplitude is maximized when $omega approx omega_0$ (exact peak at $omega = sqrt(omega_0^2 - b^2 / (2 m^2))$ for light damping).
 ]
 
 #pagebreak()
@@ -1996,6 +2340,60 @@ Energy loss: $Delta K = K_i - K_f$. For $v_2 = 0$: the loss is $K_i dot m_2/(m_1
   ]
 ]
 
+== 2D Collisions
+
+#important[
+  *Conserve momentum component by component.* Each axis is independent.
+  $
+    m_1 va(v)_(1 i) + m_2 va(v)_(2 i) = m_1 va(v)_(1 f) + m_2 va(v)_(2 f)
+  $
+  $->$ two scalar equations (x and y). For *elastic* 2D, kinetic energy gives a third equation.
+
+  *Solve by:*
+  + Pick axes (e.g. along $va(v)_(1 i)$ if 1 hits stationary 2).
+  + Write $p_x$ and $p_y$ conservation.
+  + For elastic: add $K_i = K_f$.
+]
+
+#math-hint()[
+  *Classic billiards result — equal masses, one initially at rest, elastic:*
+  $
+    va(v)_(1 f) dot va(v)_(2 f) = 0 quad => quad va(v)_(1 f) tack.t va(v)_(2 f)
+  $
+  *The outgoing velocities are perpendicular!* (Trivial special case: one of them is zero.)
+
+  *Reverse-engineering* (E24 Q11): given $va(v)_(1 i), va(v)_(2 i), va(v)_(1 f)$, find $va(v)_(2 f)$ by vector subtraction:
+  $
+    va(v)_(2 f) = (m_1 va(v)_(1 i) + m_2 va(v)_(2 i) - m_1 va(v)_(1 f)) / m_2
+  $
+]
+
+#example(title: [E24 Q11: Equal-mass 2D collision])[
+  $m_1 = m_2$, both axes give $va(v)_(2 f) = va(v)_(1 i) + va(v)_(2 i) - va(v)_(1 f)$.
+  Construct geometrically: place $-va(v)_(1 f)$ tip-to-tail after $va(v)_(1 i) + va(v)_(2 i)$.
+]
+
+== Impulse–Momentum Form of Newton's 2nd Law
+
+#definition(title: [Force ↔ momentum])[
+  $
+    va(F)_("net") = (dd(va(p)))/(dd(t)), quad va(J) = integral_(t_1)^(t_2) va(F)(t) dd(t) = Delta va(p)
+  $
+  Holds even when $m$ changes (rockets). For constant $m$ reduces to $va(F) = m va(a)$.
+
+  *Kinetic energy via momentum:* $K = p^2 / (2 m)$.
+]
+
+== Recoil
+
+#math-hint()[
+  *Rifle/projectile from rest:* $m_R va(v)_R + m_b va(v)_b = 0$.
+  $
+    v_R = -(m_b / m_R) v_b, quad K_R / K_b = m_b / m_R
+  $
+  Same as the "explosion from rest" pattern: lighter object gets more KE.
+]
+
 == Fusion/Decay Energy Distribution (E25 Q11)
 
 #important[
@@ -2064,6 +2462,20 @@ Connection: $v = omega r$, $a_("tangential") = alpha r$, $a_("radial") = omega^2
   - Rod about end ($1/3$) $>$ about midpoint ($1/12$) — mass at one end is far from axis.
 ]
 
+== Moment of Inertia — Definitions
+
+#definition(title: [General $I$ about a given axis])[
+  *Discrete (point masses):* $I = sum_i m_i r_(perp,i)^2$ ($r_perp$ = perpendicular distance to axis).
+
+  *Continuous (uniform density $rho$):*
+  $
+    I = integral_V r_perp^2 rho dd(V) = M/V integral_V r_perp^2 dd(V)
+  $
+
+  *Center of mass (continuous):* $va(r)_("cm") = (1/M) integral_V rho va(r) dd(V)$.
+  For uniform symmetric bodies, $va(r)_("cm")$ is at the geometric center.
+]
+
 == Parallel Axis Theorem (Steiner)
 
 #definition(title: [Steiner's Theorem])[
@@ -2078,9 +2490,20 @@ Connection: $v = omega r$, $a_("tangential") = alpha r$, $a_("radial") = omega^2
 
 == Torque and Newton's 2nd Law
 
-$
-  tau = r F sin theta, quad sum tau_("net") = I alpha, quad L = I omega
-$
+#definition(title: [Vector form (use the right-hand rule)])[
+  $
+    va(tau) = va(r) times va(F), quad va(L) = va(r) times va(p) = va(r) times m va(v)
+  $
+  $
+    abs(va(tau)) = r F sin theta, quad sum va(tau)_("net") = I va(alpha) = (dd(va(L)))/(dd(t))
+  $
+
+  *Sign/direction:* point fingers from $va(r)$ toward $va(F)$, thumb gives $va(tau)$ direction. For fixed-axis problems, just pick a positive rotation sense and assign $+$/$-$.
+
+  *Lever arm:* $abs(va(tau)) = r_perp F$ where $r_perp$ is the perpendicular distance from the axis to the line of action of $va(F)$.
+]
+
+For fixed-axis rotation: $sum tau_("net") = I alpha$, $L = I omega$.
 
 #important[
   *Conservation of angular momentum (when $sum tau_("ext") = 0$):*
@@ -2226,7 +2649,7 @@ $
 == What You MUST Know by Heart
 
 #important[
-  *Top 10 memory rules:*
+  *Top 15 memory rules:*
 
   + *Kinematics*: $v = v_0 + a t$, $Delta x = v_0 t + 1/2 a t^2$, $v^2 = v_0^2 + 2 a Delta x$.
   + *Free fall*: time to top $= v_0/g$, max height $= v_0^2/(2g)$.
@@ -2238,6 +2661,11 @@ $
   + *Two-body energy split from rest*: lighter particle gets $r/(1+r)$ fraction.
   + *Moments of inertia*: point $m r^2$, ring $m r^2$, disk $1/2 m r^2$, sphere $2/5 m r^2$.
   + *Angular momentum conservation*: $I_1 omega_1 = I_2 omega_2$ (no external torque).
+  + *Error propagation*: $sigma_f^2 = sum (pdv(f, x_i))^2 sigma_i^2$ (independent); add linearly if dependent.
+  + *Standard score*: $z = (x - x_("ref")) / sigma$; $abs(z) < 2$ ok, $> 3$ reject.
+  + *Linear regression*: slope $B = (N sum x y - sum x sum y) / (N sum x^2 - (sum x)^2)$.
+  + *Drag terminal velocity*: linear $v_t = m g / b$; quadratic $v_t = sqrt(m g / D)$.
+  + *Damped/forced SHO*: $omega_0 = sqrt(k/m)$, resonance at $omega approx omega_0$.
 ]
 
 == Set Phrases (exam script)

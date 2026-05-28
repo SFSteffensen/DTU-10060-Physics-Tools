@@ -105,6 +105,59 @@ def is_consistent(new_value: float, data, n_sigma: float = 2.0) -> dict:
     }
 
 
+def compare_measurements(
+    x: float, sigma_x: float, y: float, sigma_y: float, n_sigma: float = 2.0
+) -> dict:
+    """
+    Compare two independent measurements x ± σ_x and y ± σ_y.
+
+        z = (x − y) / sqrt(σ_x² + σ_y²)
+
+    Guide: |z| < 2 → consistent, 2 ≤ |z| < 3 → grey zone, |z| ≥ 3 → reject.
+
+    Returns:
+        diff        – signed difference x − y
+        sigma_diff  – combined uncertainty sqrt(σ_x² + σ_y²)
+        z           – standard score of the difference
+        consistent  – True if |z| < n_sigma
+    """
+    diff = x - y
+    sigma_diff = sqrt(sigma_x**2 + sigma_y**2)
+    z = diff / sigma_diff
+    return dict(diff=diff, sigma_diff=sigma_diff, z=z, consistent=abs(z) < n_sigma)
+
+
+def round_uncertainty(value: float, sigma: float) -> dict:
+    """
+    Round σ to 1 significant figure, or 2 if the leading digit is 1, 2, or 3
+    (to keep the rounding error under ~10 %). Round `value` to match σ's last
+    decimal place.
+
+    Returns:
+        value     – rounded best estimate
+        sigma     – rounded uncertainty
+        decimals  – number of decimal places used (≥ 0 means decimal places;
+                    < 0 means rounded to that power of 10, e.g. −1 → tens)
+        formatted – human string like "10.0 ± 0.5" or "(1.2 ± 0.3)·10³"
+    """
+    if sigma <= 0:
+        raise ValueError("sigma must be positive")
+    # Order of magnitude of σ
+    exp10 = int(np.floor(np.log10(sigma)))
+    leading = sigma / 10**exp10  # in [1, 10)
+    # Keep 2 sig figs when leading digit is 1, 2, or 3
+    sig_figs = 2 if leading < 3.95 else 1
+    # decimals to round to (positive = after decimal point)
+    decimals = -(exp10 - (sig_figs - 1))
+    sigma_r = round(sigma, decimals)
+    value_r = round(value, decimals)
+    if decimals >= 0:
+        fmt = f"{value_r:.{decimals}f} ± {sigma_r:.{decimals}f}"
+    else:
+        fmt = f"{value_r:.0f} ± {sigma_r:.0f}"
+    return dict(value=value_r, sigma=sigma_r, decimals=decimals, formatted=fmt)
+
+
 def weighted_mean(values, uncertainties) -> tuple[float, float]:
     """
     Inverse-variance-weighted mean and its standard error.
@@ -413,6 +466,23 @@ def conical_pendulum(L: float, theta_deg: float, g_local: float = g) -> dict:
     return dict(omega=ω, T=2 * pi / ω, v=ω * r, r=r, tension_over_mg=1 / cos(θ))
 
 
+def physical_pendulum_period(
+    I_pivot: float, mass: float, d_cm: float, g_local: float = g
+) -> float:
+    """
+    Small-angle period of a rigid body pivoting at distance `d_cm` from its
+    center of mass, with moment of inertia `I_pivot` about the *pivot*:
+
+        T = 2π · sqrt(I_pivot / (m · g · d_cm))
+
+    Use `parallel_axis(I_cm, m, d_cm)` to convert from I_cm if needed.
+
+    Simple-pendulum sanity check: point mass on string of length L gives
+    I_pivot = m·L², d_cm = L  →  T = 2π·sqrt(L/g). ✓
+    """
+    return float(2 * pi * sqrt(I_pivot / (mass * g_local * d_cm)))
+
+
 def banked_curve_angle(v: float, r: float, g_local: float = g) -> float:
     """
     Banking angle [deg] for a curve of radius r negotiated at speed v
@@ -571,6 +641,57 @@ def air_drag_fall(
     return out
 
 
+def quadratic_drag_fall(
+    mass: float,
+    drag_coef_D: float,
+    y0: float = 100,
+    v0: float = 0,
+    t_max: float = 20,
+    g_local: float = g,
+    n_points: int = 1001,
+) -> dict:
+    """
+    1D fall with quadratic drag:  F = −m g − D · v · |v|  (positive up).
+    Terminal speed = sqrt(m g / D).
+
+    D = ½ ρ C_D A  (use this to derive D from the drag coefficient).
+
+    Returns:
+        t           – time array [s] (numpy)
+        y           – vertical position array [m], positive up (numpy)
+        v           – vertical velocity array [m/s] (numpy)
+        v_terminal  – terminal fall speed magnitude sqrt(m g / D) [m/s]
+    """
+
+    def F(t, x, v):
+        return -mass * g_local - drag_coef_D * v * abs(v)
+
+    out = integrate_em(F, mass, y0, v0, (0, t_max), n_points)
+    out["v_terminal"] = sqrt(mass * g_local / drag_coef_D)
+    return out
+
+
+def terminal_velocity(
+    mass: float,
+    drag_coef: float,
+    regime: str = "linear",
+    g_local: float = g,
+) -> float:
+    """
+    Terminal fall speed for a body in steady-state drag.
+
+      linear (Stokes):   F = b v        →  v_t = m g / b
+      quadratic (form):  F = D v²       →  v_t = sqrt(m g / D)
+
+    `drag_coef` is `b` for linear, `D` for quadratic.
+    """
+    if regime == "linear":
+        return mass * g_local / drag_coef
+    if regime == "quadratic":
+        return sqrt(mass * g_local / drag_coef)
+    raise ValueError(f"regime must be 'linear' or 'quadratic', got {regime!r}")
+
+
 def oscillation_period(
     force_func: Callable[[float, float, float], float],
     mass: float,
@@ -617,6 +738,85 @@ def oscillation_period(
             "Fewer than 2 maxima found; increase t_max or check initial conditions"
         )
     return float(np.diff(t_events).mean())
+
+
+def damped_driven_sho(
+    mass: float,
+    damping_b: float,
+    spring_k: float,
+    F0: float = 0.0,
+    omegas: Optional[np.ndarray] = None,
+    t_transient: float = 50.0,
+    t_measure: float = 50.0,
+    n_points_per_period: int = 200,
+) -> dict:
+    """
+    Driven damped harmonic oscillator:  m·ẍ + b·ẋ + k·x = F0·sin(ω·t).
+
+    If `omegas` is None: return the time-domain solution for free vibration
+    (F0 = 0) at the natural frequency starting from x=1, v=0.
+
+    If `omegas` is given: sweep ω, integrate past the transient (`t_transient`
+    seconds), then measure steady-state amplitude over `t_measure` seconds.
+    Returns the response curve A(ω).
+
+    Returns:
+        omega0    – natural angular frequency sqrt(k/m) [rad/s]
+        zeta      – damping ratio b / (2·sqrt(m·k))
+        omega_d   – damped angular frequency, omega0·sqrt(1 − ζ²) (NaN if ζ ≥ 1)
+        omegas    – the ω array used (only if sweep)
+        amplitude – steady-state amplitude at each ω (only if sweep)
+        t, x, v   – time-domain arrays (only if no sweep)
+    """
+    omega0 = sqrt(spring_k / mass)
+    zeta = damping_b / (2 * sqrt(mass * spring_k))
+    omega_d = omega0 * sqrt(1 - zeta**2) if zeta < 1 else float("nan")
+
+    if omegas is None:
+        # Free response with unit initial displacement
+        def rhs(t, y):
+            x, v = y
+            return [v, -(damping_b * v + spring_k * x) / mass]
+
+        T = 2 * pi / omega0
+        sol = solve_ivp(
+            rhs,
+            (0, 10 * T),
+            [1.0, 0.0],
+            t_eval=np.linspace(0, 10 * T, 10 * n_points_per_period),
+            rtol=1e-9,
+            atol=1e-12,
+        )
+        return dict(
+            omega0=omega0, zeta=zeta, omega_d=omega_d,
+            t=sol.t, x=sol.y[0], v=sol.y[1],
+        )
+
+    omegas = np.asarray(omegas, float)
+    amps = np.empty_like(omegas)
+    for i, w in enumerate(omegas):
+        def rhs(t, y, w=w):
+            x, v = y
+            return [v, (F0 * sin(w * t) - damping_b * v - spring_k * x) / mass]
+
+        T = 2 * pi / w
+        t_total = t_transient + t_measure
+        n_points = max(int(n_points_per_period * t_total / T), 200)
+        sol = solve_ivp(
+            rhs,
+            (0, t_total),
+            [0.0, 0.0],
+            t_eval=np.linspace(0, t_total, n_points),
+            rtol=1e-9,
+            atol=1e-12,
+        )
+        mask = sol.t >= t_transient
+        x_ss = sol.y[0][mask]
+        amps[i] = 0.5 * (x_ss.max() - x_ss.min())
+    return dict(
+        omega0=omega0, zeta=zeta, omega_d=omega_d,
+        omegas=omegas, amplitude=amps,
+    )
 
 
 # §9  WORK AND ENERGY
@@ -790,6 +990,47 @@ def inelastic_1d(m1: float, v1i: float, m2: float, v2i: float) -> dict:
     return dict(vf=vf, Ki=Ki, Kf=Kf, energy_lost=Ki - Kf)
 
 
+def collision_2d(
+    m1: float, v1i, m2: float, v2i, v1f
+) -> dict:
+    """
+    2D collision via momentum conservation (per component).
+
+    Given the masses and three of the four velocity vectors, solves
+        m1 v1i + m2 v2i = m1 v1f + m2 v2f
+    for v2f.
+
+    Velocities are 2-vectors (any iterable of length 2; e.g. tuples, lists,
+    numpy arrays).
+
+    Returns:
+        v2f          – final velocity of body 2 [m/s, m/s] (numpy)
+        Ki           – total kinetic energy before [J]
+        Kf           – total kinetic energy after [J]
+        energy_lost  – Ki − Kf (>0 inelastic, 0 elastic, <0 → bad input)
+        angle_deg    – angle between v1f and v2f in degrees
+        is_elastic   – True if |energy_lost / Ki| < 1e−6
+    """
+    v1i = np.asarray(v1i, float)
+    v2i = np.asarray(v2i, float)
+    v1f = np.asarray(v1f, float)
+    v2f = (m1 * v1i + m2 * v2i - m1 * v1f) / m2
+    Ki = 0.5 * m1 * (v1i @ v1i) + 0.5 * m2 * (v2i @ v2i)
+    Kf = 0.5 * m1 * (v1f @ v1f) + 0.5 * m2 * (v2f @ v2f)
+    # Angle between final velocities
+    n1 = np.linalg.norm(v1f)
+    n2 = np.linalg.norm(v2f)
+    if n1 > 0 and n2 > 0:
+        cos_a = np.clip((v1f @ v2f) / (n1 * n2), -1.0, 1.0)
+        angle_deg = float(np.degrees(np.arccos(cos_a)))
+    else:
+        angle_deg = float("nan")
+    return dict(
+        v2f=v2f, Ki=Ki, Kf=Kf, energy_lost=Ki - Kf,
+        angle_deg=angle_deg, is_elastic=abs(Ki - Kf) < 1e-6 * max(Ki, 1.0),
+    )
+
+
 def explosion_2body(m1: float, m2: float, v2: float) -> float:
     """
     Two-body explosion from rest: m1 v1 + m2 v2 = 0  ⇒  v1 = −m2 v2 / m1.
@@ -915,6 +1156,36 @@ def bowling_ball_after_release(
         t_pure_rolling=t_pure_roll,
         v_at_pure_rolling=v_at_roll,
     )
+
+
+def atwood_with_pulley(
+    m1: float, m2: float, I_pulley: float, R_pulley: float, g_local: float = g
+) -> dict:
+    """
+    Atwood machine with a *massive* pulley. m1 is taken to be the heavier
+    mass; if m2 > m1 the sign of `a` will simply flip.
+
+      a = (m1 − m2) g / (m1 + m2 + I_p / R²)
+
+    Tensions on the two sides are *unequal* because torque accelerates the
+    pulley:
+      T1 = m1 (g − a)     (heavier side, descending)
+      T2 = m2 (g + a)     (lighter side, ascending)
+
+    Sanity: I_pulley = 0 reduces to the classic Atwood formula.
+
+    Returns:
+        a           – signed acceleration of m1 [m/s²] (positive = m1 down)
+        alpha       – angular acceleration of pulley [rad/s²]
+        T1, T2      – string tensions [N]
+        delta_T     – T1 − T2 = I_p · α / R  (zero for massless pulley)
+    """
+    denom = m1 + m2 + I_pulley / (R_pulley * R_pulley)
+    a = (m1 - m2) * g_local / denom
+    alpha = a / R_pulley
+    T1 = m1 * (g_local - a)
+    T2 = m2 * (g_local + a)
+    return dict(a=a, alpha=alpha, T1=T1, T2=T2, delta_T=T1 - T2)
 
 
 def collide_disc_drop(I1: float, omega1: float, I2_falling: float) -> dict:
