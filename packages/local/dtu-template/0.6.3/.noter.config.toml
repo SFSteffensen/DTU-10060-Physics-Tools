@@ -1,0 +1,123 @@
+# DTU Notes Template Package Configuration
+# This file defines templates, their capabilities, and engine configuration
+# for the DTU Notes CLI template system.
+
+[metadata]
+# Package identification
+name = "dtu-template"                                    # Template package name
+version = "0.6.3"                                        # Template package version
+description = "Unofficial DTU academic templates for notes and assignments"  # Package description
+repository = "https://github.com/HollowNumber/dtu-note-template"  # Source repository URL
+author = "Mikkel M.H. Pedersen <mikkel.helding@gmail.com>"
+license = "MIT"                                          # License type
+
+# =============================================================================
+# TEMPLATE DEFINITIONS
+# Define individual templates with their properties and capabilities
+# =============================================================================
+
+[[templates]]
+name = "note"                                     # Internal template identifier
+display_name = "Lecture Notes"                           # User-friendly name shown in CLI
+description = "Standard template for taking lecture notes with DTU branding"
+file = "src/layouts/note.typ"                                     # Template file name in package
+function = "dtu-note"                            # Typst function name to call
+supports_variants = true                                 # Whether this template has variants
+course_types = ["all"]                                  # Course types this applies to (or "all")
+default_sections = [                                    # Default sections created in template
+    "Key Concepts",
+    "Examples",
+    "Important Points",
+    "Questions & Follow-up"
+]
+
+[[templates]]
+name = "assignment"                                      # Assignment template
+display_name = "Assignment"
+description = "Standard DTU assignment template with problem-solving structure"
+file = "src/layouts/assignment.typ"
+function = "dtu-assignment"
+supports_variants = true                                # Has math/programming variants
+course_types = ["all"]
+default_sections = [
+    "Problem Statement",
+    "Solution Approach",
+    "Implementation",
+    "Analysis",
+    "Conclusion"
+]
+
+
+# =============================================================================
+# TEMPLATE VARIANTS
+# Specialized versions of templates for different course types
+# =============================================================================
+
+[[variants]]
+template = "assignment"                                  # Refers to template name above
+name = "dtu-math-assignment"                                # Variant identifier
+display_name = "Mathematical Assignment"                # User-friendly variant name
+course_types = ["math", "statistics", "engineering"]   # Course types using this variant
+file = "src/variants/math-assignment.typ"                  # Variant-specific template file
+function = "dtu-math-assignment"                  # Optional: custom function name
+additional_sections = [                                 # Extra sections for this variant
+    "Mathematical Proofs",
+    "Theoretical Analysis",
+    "Formula Derivations"
+]
+
+[[variants]]
+template = "assignment"
+name = "programming-assignment"
+display_name = "Programming Assignment"
+course_types = ["programming", "software", "computer-science"]
+function = "dtu-programming-assignment"
+file = "src/variants/programming-assignment.typ"
+additional_sections = [
+    "Algorithm Design",
+    "Code Implementation",
+    "Testing Strategy",
+    "Performance Analysis"
+]
+
+[[variants]]
+template = "assignment"
+name = "physics-assignment"
+display_name = "Physics Assignment"
+course_types = ["physics", "mechanics", "electromagnetism", "thermodynamics"]
+function = "dtu-physics-assignment"
+file = "src/variants/physics-assignment.typ"
+additional_sections = [
+    "Given Quantities",
+    "Physical Principles",
+    "Free Body Diagrams",
+    "Derivation",
+    "Unit Analysis",
+    "Numerical Solution"
+]
+
+[[variants]]
+template = "note"
+name = "physics-note"
+display_name = "Physics Lecture Notes"
+course_types = ["physics", "mechanics", "electromagnetism", "thermodynamics"]
+function = "dtu-physics-note"
+file = "src/variants/physics-note.typ"
+additional_sections = [
+    "Physical Laws",
+    "Key Equations",
+    "Derivations",
+    "Phenomena",
+    "Limiting Cases",
+    "Common Misconceptions"
+]
+
+# =============================================================================
+# COURSE TYPE MAPPING
+# Maps DTU course code patterns to course types for automatic variant selection
+# =============================================================================
+
+[course_mapping]
+"01xxx" = "math"                    # Math courses (01005, 01006, etc.)
+"02xxx" = "programming"             # Computer Science (02101, 02102, etc.)
+"10xxx" = "physics"                 # Physics courses (10060, etc.)
