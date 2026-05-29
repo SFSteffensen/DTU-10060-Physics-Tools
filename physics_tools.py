@@ -361,6 +361,39 @@ def free_fall_v(v0: float, t, g_local: float = g) -> float | np.ndarray:
     return v0 - g_local * np.asarray(t)
 
 
+def two_balls_meet(
+    y0_a: float, v0_a: float, y0_b: float, v0_b: float, g_local: float = g
+) -> dict:
+    """
+    Two objects in free fall, both subject only to gravity. Find when and
+    where they meet.
+
+        y_A(t) = y0_a + v0_a t − ½ g t²
+        y_B(t) = y0_b + v0_b t − ½ g t²
+
+    Both have the same −½gt² so it cancels:  y0_a + v0_a t = y0_b + v0_b t
+    ⇒  t = (y0_b − y0_a) / (v0_a − v0_b)
+
+    Positive y is up; positive v0 is up; "dropped" means v0 = 0; "thrown
+    down" means v0 < 0.
+
+    Returns:
+        t       – meeting time [s] (NaN if they never meet — same v0)
+        y       – meeting height [m]
+        valid   – True if t > 0 (they actually meet in the future)
+
+    Example (E25 Q3): ball 1 thrown up from 0 at 50 m/s; ball 2 dropped from 100 m.
+        >>> two_balls_meet(0, 50, 100, 0)
+        {'t': 2.0, 'y': 80.36, 'valid': True}
+    """
+    dv = v0_a - v0_b
+    if dv == 0:
+        return dict(t=float("nan"), y=float("nan"), valid=False)
+    t = (y0_b - y0_a) / dv
+    y = y0_a + v0_a * t - 0.5 * g_local * t * t
+    return dict(t=float(t), y=float(y), valid=t > 0)
+
+
 def meeting_time(
     y_a: Callable, y_b: Callable, t_max: float = 1000, n_scan: int = 5000
 ) -> Optional[float]:

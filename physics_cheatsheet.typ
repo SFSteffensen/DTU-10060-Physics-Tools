@@ -778,16 +778,42 @@ $
   *Trick:* Set up the equation $y_A(t) = y_B(t)$ and solve for $t$. If both have $-1/2 g t^2$, *$g$ cancels* — set the $g$-term aside and solve a linear equation!
 ]
 
-#example(title: [E25 Q3: Two balls])[
+#example(title: [E25 Q3: Two balls — STEP BY STEP])[
   Ball 1 is thrown upward from the ground with $v_0 = 50$ m/s. Ball 2 is dropped from 100 m above ball 1.
 
   #solution()[
-    $y_1(t) = 50 t - 1/2 g t^2$, $y_2(t) = 100 - 1/2 g t^2$.
+    *Step 1 — Write position for each ball as a function of time.* Both have gravity (free fall), nothing else.
 
-    Set equal: $50 t = 100 ==> t = 2$ s. *The gravity terms cancel!*
+    Ball 1 (starts at ground $y_0 = 0$, thrown up at 50 m/s):
+    $ y_1(t) = 0 + 50 t - 1/2 g t^2 = 50 t - 1/2 g t^2 $
 
-    $y(2) = 50 dot 2 - 1/2 dot 9.82 dot 4 = 100 - 19.64 = 80.36$ m. *Answer: I) 80.4 m*.
+    Ball 2 (starts at $y_0 = 100$, *dropped* means $v_0 = 0$):
+    $ y_2(t) = 100 + 0 dot t - 1/2 g t^2 = 100 - 1/2 g t^2 $
+
+    *Step 2 — "Meet" means same position at same time:* $y_1(t) = y_2(t)$.
+    $ 50 t - 1/2 g t^2 = 100 - 1/2 g t^2 $
+
+    *Step 3 — Notice that $-1/2 g t^2$ is on both sides. Subtract it:*
+    $ 50 t = 100 $
+
+    *Step 4 — Solve for t:* $t = 2$ s.
+
+    *Step 5 — Plug t back into EITHER equation to get the height.* Use ball 1:
+    $ y_1(2) = 50 dot 2 - 1/2 dot 9.82 dot 2^2 = 100 - 19.64 = 80.36 #text(" m") $
+
+    *Answer: I) 80.4 m*.
+
+    *Why gravity cancels:* both balls are in free fall, so both have the same $-1/2 g t^2$. When you ask "when are they at the same height?" gravity is irrelevant — only the initial conditions decide. *This is the whole trick.*
   ]
+]
+
+#math-hint()[
+  *Meeting-problem template (memorize):*
+
+  + Write $y(t) = y_0 + v_(0,y) t - 1/2 g t^2$ for *each* object. Be careful with signs of $v_(0,y)$ (up = $+$).
+  + Set $y_1(t) = y_2(t)$.
+  + The $-1/2 g t^2$ terms cancel (both in free fall) $->$ linear equation in $t$.
+  + Solve for $t$, then substitute back to get the meeting height.
 ]
 
 == Reading a Graph
@@ -981,16 +1007,51 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   *Vectors in 2D:* same formula, just as vectors.
 ]
 
-#example(
-  title: [E25 Q4: Boat and river],
-)[
-  Boat's speed in water $= v$, water's speed $= v_0$. Time with the current to travel distance $L$: $T$. Time against the current: $2 T$.
+#example(title: [E25 Q4: Boat and river — STEP BY STEP])[
+  Boat's speed *relative to water* $= v$. River current $= v_0$. Distance to travel: $L$.
+  Downstream takes time $T$. Upstream takes time $2T$. Find $v$ in terms of $v_0$.
 
   #solution()[
-    With current: $L = (v + v_0) T$. Against current: $L = (v - v_0) dot 2 T$.
+    *Step 1 — Velocities add as vectors. They DO NOT divide.* The rule:
+    - *Going WITH the current:* ground speed = $v + v_0$ (current helps).
+    - *Going AGAINST the current:* ground speed = $v - v_0$ (current fights).
 
-    Set equal: $v + v_0 = 2(v - v_0) ==> v = 3 v_0$. *Answer: B*.
+    Nothing is being multiplied or divided here. We're just adding (or subtracting) two velocity vectors.
+
+    *Step 2 — Distance = speed × time.* This is always multiplication.
+
+    Downstream: $L = (v + v_0) dot T$.
+    Upstream: $L = (v - v_0) dot 2 T$.
+
+    *Step 3 — Same $L$, set equal:*
+    $ (v + v_0) T = (v - v_0) dot 2 T $
+
+    *Step 4 — T cancels.* Expand:
+    $ v + v_0 = 2 v - 2 v_0 ==> 3 v_0 = v ==> v = 3 v_0 $
+
+    *Answer: B*.
   ]
+]
+
+#math-hint()[
+  *Ratio-problem template (no numbers, only symbols):*
+
+  + Identify what *physical quantity is the same* in both scenarios (here: the distance $L$).
+  + Write that quantity *two different ways* using $"speed" times "time"$ (or whatever applies).
+  + Set them equal. Cancel anything that appears on both sides.
+  + Solve symbolically — *the answer is a clean ratio*, not a number.
+
+  *Velocities never multiply or divide each other.* They ADD when aligned, SUBTRACT when opposing.
+
+  *SymPy template:*
+  ```python
+  from sympy import symbols, Eq, solve
+  v, v0, L, T = symbols('v v0 L T', positive=True)
+  eq1 = Eq(L, (v + v0)*T)        # downstream
+  eq2 = Eq(L, (v - v0)*2*T)      # upstream
+  solve([eq1, eq2], [v, L])      # → {v: 3*v0, L: 4*v0*T}
+  ```
+  Note `solve([eq1, eq2], [v, L])` with TWO equations and TWO unknowns. *Don't* try to solve one equation that says `x = 2x`.
 ]
 
 #math-hint(
@@ -1739,7 +1800,7 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   )[
   *Classic trick:* If an object decelerates solely due to friction on a horizontal surface, and you have the $v(t)$ graph:
   $
-    abs(a) = abs(Delta v / Delta t) ==> mu_k = abs(a) / g
+    abs(a) = abs((Delta v) / (Delta t)) ==> mu_k = abs(a) / g
   $
   *Mass cancels out!* No need to know the mass.
 ]
@@ -2235,12 +2296,18 @@ $
   - *Static friction (no sliding):* $E_m$ unchanged.
 
   *E25 Q14 (disk falls onto rotating disk):*
-  + Fall: flat (PE $->$ KE)
-  + Impact: sharp drop (collision)
-  + Friction between disks equalizes $omega$: gradual decline
-  + Common $omega$: flat again
+  + Fall: flat (PE $->$ KE, no friction yet — total $E_m$ unchanged).
+  + Impact: sharp drop (inelastic collision — instant energy loss).
+  + Friction between disks equalizes $omega$: gradual decline (kinetic friction dissipates).
+  + Common $omega$: flat again (no more slipping).
 
-  *Pattern:* flat $->$ drop $->$ gradual decline $->$ flat = *graph H*.
+  *Pattern:* flat $->$ *vertical drop* $->$ smooth ramp down $->$ flat = *graph H*.
+
+  *H vs G decision rule:*
+  - *H* has a *vertical line* (instantaneous drop) at the collision. Use when there's a collision (impulse).
+  - *G* has a *smooth curve* throughout. Use when only continuous dissipation acts (e.g. friction the whole time, no impact).
+
+  If the problem has any sudden event (collision, impact, latch engaging), it's H. If purely gradual energy loss, it's G.
 ]
 
 #pagebreak()
@@ -2407,7 +2474,19 @@ Energy loss: $Delta K = K_i - K_f$. For $v_2 = 0$: the loss is $K_i dot m_2/(m_1
   *Proof:* $m_H v_H = m_L v_L ==> v_L = r v_H$. $K_H/K_L = m_H v_H^2/(m_L v_L^2) = (1/r)$.
   So $K_H : K_L = 1 : r$ $->$ fractions $1/(1+r)$ and $r/(1+r)$.
 
-  *E25 Q11:* He vs n with mass ratio 4:1. He gets $1/5 = 20%$, n gets $4/5 = 80%$. *Answer: D*.
+  *E25 Q11 (D + T $->$ #super[4]He + n):* identify masses by mass number.
+  - $""^4$He: mass number 4 (the "4" in front).
+  - n (neutron): mass number 1.
+
+  So *He is the heavy one (4), n is the light one (1)*. Ratio $r = m_H / m_L = 4$.
+
+  Heavy fraction: $1/(1+4) = 20%$. Light fraction: $4/5 = 80%$.
+
+  $->$ *He: 20%, n: 80%*. *Answer: D*.
+
+  *Rule:* the *superscript* on an isotope ($""^A X$) IS the mass number. A neutron has mass number 1. A proton/hydrogen has mass number 1. Deuterium ($""^2 H$): 2. Tritium ($""^3 H$): 3.
+
+  *Always*: light particle gets more KE. So if the MC has both 80/20 and 20/80, pick the one where the *lighter* particle (smaller mass number) has the *bigger* fraction.
 ]
 
 #pagebreak()
@@ -2561,20 +2640,26 @@ For fixed-axis rotation: $sum tau_("net") = I alpha$, $L = I omega$.
 // TODO: Draw a bowling ball to the right on a rough horizontal surface. Draw arrows: v (horizontal right, COM), normal force (up), gravity (down), friction (horizontal left, at contact point on the bottom).
 
 #important[
-  *Bowling ball just released (E25 Q12):*
+  *Rolling-without-slipping condition:* $v_("cm") = r omega$.
 
-  Just after release: $v > 0$, $omega = 0$. Since $v eq.not r omega$, the *contact point slides* $->$ *kinetic friction*.
+  *What this equation MEANS (mental picture):* the *contact point* of a wheel has ground velocity $v_("cm") - r omega$ (center motion forward, rim motion backward at the bottom). When $v_("cm") = r omega$, contact point is *stationary on the floor* $->$ rolls without slipping.
 
-  *Kinetic friction (backward):*
-  - $a = -mu_k g$ (negative — decelerates).
-  - Torque about COM: $tau = f_k r > 0$ $->$ $alpha > 0$ (ball begins to roll).
-  - $v$ decreases, $omega$ increases, until $v = r omega$. Then pure rolling, friction becomes static and vanishes (on horizontal surface).
+  *Test the condition:* compute $v_("cm") - r omega$.
+  - $= 0$: pure rolling $->$ *static* friction (whatever value needed; zero on flat ground).
+  - $> 0$: contact point slides *forward* relative to floor $->$ *kinetic* friction points *backward*.
+  - $< 0$: contact point slides *backward* (spinning faster than rolling) $->$ kinetic friction points *forward*.
+]
 
-  *Correct answer (E25 Q12): B, C, F, I*
-  - B: $a < 0$ ✓
-  - C: $alpha > 0$ ✓
-  - F: kinetic friction ✓
-  - I: $v eq.not plus.minus r omega$ ✓
+#note-box()[
+  *Bowling ball just released (E25 Q12) — reason from the contact point:*
+
+  + $v > 0$, $omega = 0$ (thrown but not spun) $-> v_("cm") - r omega = v - 0 = v > 0$.
+  + Contact point slides forward $->$ kinetic friction, pointing backward. *(F ✓)*
+  + Rolling condition fails: $v eq.not r omega$. *(I ✓)*
+  + Friction (backward) on the ball $->$ $a < 0$. *(B ✓)*
+  + Friction at bottom of ball $arrow$ backward. Torque about center: imagine pushing the back of the bottom of the wheel backward $->$ wheel starts spinning *forward* (counterclockwise viewed from standard frame). So $alpha > 0$. *(C ✓)*
+
+  *Later:* friction reduces $v$ and increases $omega$ until $v = r omega$. Then static friction takes over and on a flat surface there's no horizontal force $->$ ball rolls forever at that speed.
 ]
 
 #note-box()[
