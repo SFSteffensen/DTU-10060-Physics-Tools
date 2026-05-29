@@ -514,7 +514,8 @@ Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
 
 == Rounding the Uncertainty
 
-#note-box()[
+#note-box(
+  )[
   *Rule:* Round $sigma_x$ to *1 significant digit*. If leading digit is *1, 2, or 3*, keep *2 digits* (so the rounding error itself stays under ~10%). The value $x$ uses the same final decimal place as $sigma_x$.
 
   - $sigma = 0.44566 -> 0.4$ (rounding error 11%)
@@ -543,7 +544,8 @@ Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
 
 == Distributions and Coverage
 
-#note-box()[
+#note-box(
+  )[
   *Normal:* $P(mu plus.minus sigma) = 0.68$, $P(mu plus.minus 2 sigma) = 0.95$, $P(mu plus.minus 3 sigma) = 0.99$.
 
   *Rectangular* (uniform, e.g. digital readout, width $w$): $sigma = w / sqrt(12)$.
@@ -558,23 +560,23 @@ Standard error of the mean: $sigma_(overline(x)) = s / sqrt(n)$.
 == Linear Regression (Least-Squares)
 
 #definition(title: [$y = A + B x$ (with $x$ exact, $y$ uncertain, equal $sigma_y$)])[
-  $
-    B = (N sum x y - sum x sum y) / (N sum x^2 - (sum x)^2), quad
-    A = (sum x^2 sum y - sum x sum x y) / (N sum x^2 - (sum x)^2)
-  $
+$
+  B = (N sum x y - sum x sum y) / (N sum x^2 - (sum x)^2), quad
+  A = (sum x^2 sum y - sum x sum x y) / (N sum x^2 - (sum x)^2)
+$
 
-  Residual standard deviation (DOF $= N - 2$):
-  $
-    sigma_y = sqrt(1/(N-2) sum_i (y_i - A - B x_i)^2)
-  $
+Residual standard deviation (DOF $= N - 2$):
+$
+  sigma_y = sqrt(1/(N-2) sum_i (y_i - A - B x_i)^2)
+$
 
-  Uncertainties on slope/intercept:
-  $
-    sigma_B = sigma_y sqrt(N / (N sum x^2 - (sum x)^2)), quad
-    sigma_A = sigma_y sqrt(sum x^2 / (N sum x^2 - (sum x)^2))
-  $
+Uncertainties on slope/intercept:
+$
+  sigma_B = sigma_y sqrt(N / (N sum x^2 - (sum x)^2)), quad
+  sigma_A = sigma_y sqrt(sum x^2 / (N sum x^2 - (sum x)^2))
+$
 
-  *In Python:* `np.polyfit(x, y, 1, cov=True)` returns $(B, A)$ and covariance matrix.
+*In Python:* `np.polyfit(x, y, 1, cov=True)` returns $(B, A)$ and covariance matrix.
 ]
 
 == Power-law fit
@@ -649,7 +651,8 @@ $
 
 === Manual error propagation — step by step
 
-#note-box()[
+#note-box(
+  )[
   *Procedure for any $f(x_1, ..., x_n)$:*
 
   + Write out the formula for $f$ explicitly.
@@ -681,22 +684,21 @@ $
   - Acceleration: $alpha = lambda / tau^2 = g$ (when $tau = sqrt(l/g)$)
 ]
 
-#example(title: [E24 Q6: Pick natural scales for $a = f(m, v, L, g, F)$])[
+#example(
+  title: [E24 Q6: Pick natural scales for $a = f(m, v, L, g, F)$],
+)[
   Length scales (need L): $lambda = L$ ✓, $lambda = v^2 / g$ ✓ (both have dim L).
   Time scale: $tau = L / v$ ✓ (has dim T). Reject $L/g$ (dim $sqrt("T")$, wrong).
 
   *General rule:* before checking options, write out the dimensions of each candidate. Only those equal to L can be $lambda$, only those equal to T can be $tau$.
 ]
 
-#example(title: [Worked example — falling object with linear drag $F_d = k v$])[
+#example(
+  title: [Worked example — falling object with linear drag $F_d = k v$],
+)[
   Variables: $m, g, h, k$ with dimensions $["M","L"/"T"^2,"L","M"/"T"]$. The dimension matrix:
   $
-    mat(
-      , m, g, h, k;
-      "M:", 1, 0, 0, 1;
-      "L:", 0, 1, 1, 0;
-      "T:", 0, -2, 0, -1
-    )
+    mat(, m, g, h, k;"M:", 1, 0, 0, 1;"L:", 0, 1, 1, 0;"T:", 0, -2, 0, -1)
   $
 
   *Find $tau$* (set product = T): $A + D = 0$, $B + C = 0$, $-2 B - D = 1$.
@@ -715,8 +717,8 @@ $
   Let $D = sqrt(v_0^2 + 2 g h)$. Then:
   $
     pdv(t, v_0) = 1/g (1 + v_0/D), quad
-    pdv(t, h)   = 1/D, quad
-    pdv(t, g)   = -(v_0 + D)/g^2
+    pdv(t, h) = 1/D, quad
+    pdv(t, g) = -(v_0 + D)/g^2
   $
 
   Plug in $v_0 = 4.20$, $h = 1.60$, $g = 9.82$, $D = 7.004$:
@@ -778,10 +780,13 @@ $
   *Trick:* Set up the equation $y_A(t) = y_B(t)$ and solve for $t$. If both have $-1/2 g t^2$, *$g$ cancels* — set the $g$-term aside and solve a linear equation!
 ]
 
-#example(title: [E25 Q3: Two balls — STEP BY STEP])[
+#example(
+  title: [E25 Q3: Two balls — STEP BY STEP],
+)[
   Ball 1 is thrown upward from the ground with $v_0 = 50$ m/s. Ball 2 is dropped from 100 m above ball 1.
 
-  #solution()[
+  #solution(
+    )[
     *Step 1 — Write position for each ball as a function of time.* Both have gravity (free fall), nothing else.
 
     Ball 1 (starts at ground $y_0 = 0$, thrown up at 50 m/s):
@@ -1033,25 +1038,26 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   ]
 ]
 
-#math-hint()[
-  *Ratio-problem template (no numbers, only symbols):*
+#math-hint(
+  )[
+*Ratio-problem template (no numbers, only symbols):*
 
-  + Identify what *physical quantity is the same* in both scenarios (here: the distance $L$).
-  + Write that quantity *two different ways* using $"speed" times "time"$ (or whatever applies).
-  + Set them equal. Cancel anything that appears on both sides.
-  + Solve symbolically — *the answer is a clean ratio*, not a number.
++ Identify what *physical quantity is the same* in both scenarios (here: the distance $L$).
++ Write that quantity *two different ways* using $"speed" times "time"$ (or whatever applies).
++ Set them equal. Cancel anything that appears on both sides.
++ Solve symbolically — *the answer is a clean ratio*, not a number.
 
-  *Velocities never multiply or divide each other.* They ADD when aligned, SUBTRACT when opposing.
+*Velocities never multiply or divide each other.* They ADD when aligned, SUBTRACT when opposing.
 
-  *SymPy template:*
-  ```python
+*SymPy template:*
+```python
   from sympy import symbols, Eq, solve
   v, v0, L, T = symbols('v v0 L T', positive=True)
   eq1 = Eq(L, (v + v0)*T)        # downstream
   eq2 = Eq(L, (v - v0)*2*T)      # upstream
   solve([eq1, eq2], [v, L])      # → {v: 3*v0, L: 4*v0*T}
   ```
-  Note `solve([eq1, eq2], [v, L])` with TWO equations and TWO unknowns. *Don't* try to solve one equation that says `x = 2x`.
+Note `solve([eq1, eq2], [v, L])` with TWO equations and TWO unknowns. *Don't* try to solve one equation that says `x = 2x`.
 ]
 
 #math-hint(
@@ -1302,7 +1308,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Five Important Forces in Mechanics
 
-#note-box()[
+#note-box(
+  )[
   Every FBD in this course is built from these five force types:
 
   + *Gravity (weight):* $va(F)_g = m va(g)$, always downward (magnitude $m g$).
@@ -1378,7 +1385,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   *On an incline:* block stays put if $tan theta <= mu_s$. Once sliding, $a = g(sin theta - mu_k cos theta)$.
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *Common exam trap:* the problem gives both $mu_s$ and $mu_k$. You must first *check* whether the object slips (static test), then use the correct coefficient. Using $mu_s$ in a dynamic situation or $mu_k$ before checking for slip are the two most common errors.
 ]
 
@@ -1715,7 +1723,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Banked Curve
 
-#definition(title: [Frictionless banked turn])[
+#definition(
+  title: [Frictionless banked turn],
+)[
   Car of speed $v$ on curve of radius $r$, banked at angle $theta$ from horizontal. Only normal force provides centripetal acceleration:
   $
     tan theta = v^2 / (g r)
@@ -1727,7 +1737,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Atwood with Massive Pulley
 
-#math-hint()[
+#math-hint(
+  )[
   When the pulley has moment of inertia $I_p$ and radius $R$, tensions on the two sides are *unequal*:
   $
     a = ((m_1 - m_2) g) / (m_1 + m_2 + I_p / R^2)
@@ -1769,7 +1780,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
 
 == Conical Pendulum
 
-#definition(title: [Mass on string sweeping a horizontal circle])[
+#definition(
+  title: [Mass on string sweeping a horizontal circle],
+)[
   String of length $L$ makes angle $theta$ with vertical; mass traces a horizontal circle of radius $r = L sin theta$ at angular speed $omega$.
 
   N2 vertical: $T cos theta = m g$.
@@ -1826,7 +1839,9 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   Time constant $tau = m / b$.
 ]
 
-#definition(title: [Quadratic (form) drag])[
+#definition(
+  title: [Quadratic (form) drag],
+)[
   Larger/faster objects in air or water:
   $
     F_d = D v^2 quad #text("where") quad D = 1/2 rho C_D A
@@ -1838,7 +1853,8 @@ Use this form when given $(x, y)$ and need to find $v_0$ or $theta$.
   *Scaling:* doubling the mass increases $v_t$ by $sqrt(2)$ (assuming same $D$).
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *Identify the regime by Reynolds number $"Re" = rho v L / eta$:* $"Re" lt.tilde 1$: Stokes (linear); $"Re" >> 1$: quadratic. For human-scale objects in air, always quadratic.
 ]
 
@@ -1904,8 +1920,8 @@ $
 == `solve_ivp` Events
 
 #note-box()[
-  *Stop simulation at a condition* (e.g. projectile hits ground):
-  ```python
+*Stop simulation at a condition* (e.g. projectile hits ground):
+```python
   def hit_ground(t, y):
       return y[0]            # zero-crossing of x[0]
   hit_ground.terminal = True   # stop on first hit
@@ -1913,14 +1929,16 @@ $
   sol = solve_ivp(rhs, ..., events=hit_ground)
   t_hit = sol.t_events[0][0]
   ```
-  - `terminal = True`: stop integration on first event.
-  - `direction = +1` / `-1`: only catch upward/downward crossings.
-  - `direction = 0` (default): all crossings.
+- `terminal = True`: stop integration on first event.
+- `direction = +1` / `-1`: only catch upward/downward crossings.
+- `direction = 0` (default): all crossings.
 ]
 
 == Damped & Driven Harmonic Oscillator
 
-#definition(title: [Spring with damping and forcing])[
+#definition(
+  title: [Spring with damping and forcing],
+)[
   $
     m dot.double(x) + b dot(x) + k x = F_0 sin(omega t)
   $
@@ -2286,7 +2304,8 @@ $
   panel(3 * cs, 0 * rs, "H", curveH)
 })
 
-#note-box()[
+#note-box(
+  )[
   *Mechanical energy patterns:*
 
   - *Free fall, no friction:* $E_m$ constant (PE $->$ KE).
@@ -2422,7 +2441,8 @@ Energy loss: $Delta K = K_i - K_f$. For $v_2 = 0$: the loss is $K_i dot m_2/(m_1
   + For elastic: add $K_i = K_f$.
 ]
 
-#math-hint()[
+#math-hint(
+  )[
   *Classic billiards result — equal masses, one initially at rest, elastic:*
   $
     va(v)_(1 f) dot va(v)_(2 f) = 0 quad => quad va(v)_(1 f) tack.t va(v)_(2 f)
@@ -2569,7 +2589,9 @@ Connection: $v = omega r$, $a_("tangential") = alpha r$, $a_("radial") = omega^2
 
 == Torque and Newton's 2nd Law
 
-#definition(title: [Vector form (use the right-hand rule)])[
+#definition(
+  title: [Vector form (use the right-hand rule)],
+)[
   $
     va(tau) = va(r) times va(F), quad va(L) = va(r) times va(p) = va(r) times m va(v)
   $
@@ -2650,7 +2672,8 @@ For fixed-axis rotation: $sum tau_("net") = I alpha$, $L = I omega$.
   - $< 0$: contact point slides *backward* (spinning faster than rolling) $->$ kinetic friction points *forward*.
 ]
 
-#note-box()[
+#note-box(
+  )[
   *Bowling ball just released (E25 Q12) — reason from the contact point:*
 
   + $v > 0$, $omega = 0$ (thrown but not spun) $-> v_("cm") - r omega = v - 0 = v > 0$.
